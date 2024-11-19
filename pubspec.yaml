@@ -58,6 +58,26 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  fonts:
+    - family: LineEnXBd
+      fonts:
+        - asset: fonts/LINESeedSansEN_XBd.ttf
+    - family: LineEnBd
+      fonts:
+        - asset: fonts/LINESeedSansEN_Bd.ttf
+    - family: LineEnRg
+      fonts:
+        - asset: fonts/LINESeedSansEN_Rg.ttf
+    - family: LineEnTh
+      fonts:
+        - asset: fonts/LINESeedSansEN_Th.ttf
+    - family: LineKrBd
+      fonts:
+        - asset: fonts/LINESeedKR-Bd.ttf
+    - family: LineKrRg
+      fonts:
+        - asset: fonts/LINESeedKR-Rg.ttf
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/logo_splash.png
@@ -65,6 +85,10 @@ flutter:
     - images/logo_apple.png
     - images/logo_kakao.png
     - images/logo_naver.png
+    - images/icon_search.png
+    - images/icon_hamberger_menu.png
+    - images/icon_alarm.png
+    - images/logo_main.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
