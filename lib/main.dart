@@ -3,6 +3,8 @@ import 'package:misaeng/capsule_tab/capsule_tab.dart';
 import 'package:misaeng/home_tab/home_tab.dart';
 import 'package:misaeng/microbe_tab/microbe_tab.dart';
 import 'package:misaeng/my_tab/my_tab.dart';
+import 'package:misaeng/onboarding/login.dart';
+import 'package:misaeng/splash_screen.dart';
 
 
 class MyApp extends StatefulWidget {
@@ -11,7 +13,7 @@ class MyApp extends StatefulWidget {
 }
 
 void main() => runApp(MaterialApp(
-      home: MyApp(),
+      home: LoginScreen(),
     ));
 
 class _TestViewState extends State<MyApp>
