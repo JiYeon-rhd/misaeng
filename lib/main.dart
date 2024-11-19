@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:misaeng/capsule_tab/capsule_tab.dart';
+import 'package:misaeng/home_tab/home_tab.dart';
+import 'package:misaeng/microbe_tab/microbe_tab.dart';
+import 'package:misaeng/my_tab/my_tab.dart';
+
 
 class MyApp extends StatefulWidget {
   @override
@@ -6,8 +11,8 @@ class MyApp extends StatefulWidget {
 }
 
 void main() => runApp(MaterialApp(
-  home: MyApp(),
-));
+      home: MyApp(),
+    ));
 
 class _TestViewState extends State<MyApp>
     with SingleTickerProviderStateMixin {
@@ -22,14 +27,12 @@ class _TestViewState extends State<MyApp>
     _tabController = TabController(length: 4, vsync: this);
 
     _tabController.addListener(
-            () => setState(() => _selectedIndex = _tabController.index));
+        () => setState(() => _selectedIndex = _tabController.index));
   }
 
   @override
   void dispose() {
-    // 불필요한 기능 종료
     _tabController.dispose();
-
     super.dispose();
   }
 
@@ -48,13 +51,17 @@ class _TestViewState extends State<MyApp>
           tabs: <Widget>[
             Tab(
               icon: Icon(
-                _selectedIndex == 0 ? Icons.account_balance : Icons.account_balance_outlined,
+                _selectedIndex == 0
+                    ? Icons.account_balance
+                    : Icons.account_balance_outlined,
               ),
               text: "홈",
             ),
             Tab(
               icon: Icon(
-                _selectedIndex == 1 ? Icons.add_circle : Icons.add_circle_outline,
+                _selectedIndex == 1
+                    ? Icons.add_circle
+                    : Icons.add_circle_outline,
               ),
               text: "미생물",
             ),
@@ -76,29 +83,12 @@ class _TestViewState extends State<MyApp>
         ),
       ),
       body: _selectedIndex == 0
-          ? tabContainer(context, Colors.indigo, "홈 탭")
+          ? HomeTab()
           : _selectedIndex == 1
-          ? tabContainer(context, Colors.amber, "미생물 탭")
-          : _selectedIndex == 2
-          ? tabContainer(context, Colors.blueGrey, "캡슐 탭")
-          : tabContainer(context, Colors.purple, "마이 탭"), // My Tab 처리
-    );
-  }
-
-  Container tabContainer(BuildContext context, Color tabColor, String tabText) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      color: tabColor,
-      child: Center(
-        child: Text(
-          tabText,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-          ),
-        ),
-      ),
+              ? MicrobeTab()
+              : _selectedIndex == 2
+                  ? CapsuleTab()
+                  : MyTab(),
     );
   }
 }
