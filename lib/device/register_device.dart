@@ -24,11 +24,15 @@ class RegisterDevice extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(height: 124),
-            Image.asset(
-              'images/icon_nfc.png',
-              width: 112.28,
-              height: 122,
-              fit: BoxFit.contain,
+             // NFC 아이콘 (클릭 시 다음 화면으로 이동)
+            GestureDetector(
+              onTap: onComplete, // NFC 아이콘을 눌렀을 때 onComplete 실행
+              child: Image.asset(
+                'images/icon_nfc.png',
+                width: 112.28,
+                height: 122,
+                fit: BoxFit.contain,
+              ),
             ),
             SizedBox(height: 44),
 
@@ -55,25 +59,25 @@ class RegisterDevice extends StatelessWidget {
             // 로딩 아이콘
             spinkit,
 
-            // RegisterMicrobe으로 넘어가는 임시 버튼 
-            SizedBox(height: 50),
-            ElevatedButton(
-              onPressed: onComplete,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 182, 182, 182), // 버튼 색상
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              ),
-              child: Text(
-                "완료",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+            // // RegisterMicrobe으로 넘어가는 임시 버튼 
+            // SizedBox(height: 50),
+            // ElevatedButton(
+            //   onPressed: onComplete,
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: Color.fromARGB(255, 182, 182, 182), // 버튼 색상
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+            //   ),
+            //   child: Text(
+            //     "완료",
+            //     style: TextStyle(
+            //       fontSize: 16,
+            //       color: Colors.white,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
