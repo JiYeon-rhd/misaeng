@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:misaeng/bar/top_bar.dart';
 import 'package:misaeng/capsule_tab/capsule_tab.dart';
+import 'package:misaeng/device/register_device.dart';
+import 'package:misaeng/device/register_microbe.dart';
+import 'package:misaeng/device/register_screen.dart';
+import 'package:misaeng/device/register_name.dart';
 import 'package:misaeng/home_tab/home_tab.dart';
 import 'package:misaeng/microbe_tab/microbe_tab.dart';
 import 'package:misaeng/my_tab/my_tab.dart';
 import 'package:misaeng/onboarding/login.dart';
-import 'package:misaeng/splash_screen.dart';
-
+import 'package:misaeng/onboarding/splash_screen.dart';
 
 class MyApp extends StatefulWidget {
   @override
@@ -13,15 +17,14 @@ class MyApp extends StatefulWidget {
 }
 
 void main() => runApp(MaterialApp(
-      home: LoginScreen(),
+      home: RegisterName(),
     ));
 
-class _TestViewState extends State<MyApp>
-    with SingleTickerProviderStateMixin {
+class _TestViewState extends State<MyApp> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   int _selectedIndex = 0;
-
+  
   @override
   void initState() {
     super.initState();
@@ -41,9 +44,7 @@ class _TestViewState extends State<MyApp>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("MISAENG"),
-      ),
+      appBar: TopBar(title: "MISAENG"), // 공통 AppBar 사용
       bottomNavigationBar: SizedBox(
         height: 56,
         child: TabBar(
