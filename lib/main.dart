@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:misaeng/bar/top_bar.dart';
 import 'package:misaeng/capsule_tab/capsule_tab.dart';
+import 'package:misaeng/device/register_device.dart';
+import 'package:misaeng/device/register_microbe.dart';
+import 'package:misaeng/device/register_screen.dart';
+import 'package:misaeng/device/register_name.dart';
 import 'package:misaeng/home_tab/home_tab.dart';
 import 'package:misaeng/microbe_tab/microbe_tab.dart';
 import 'package:misaeng/my_tab/my_tab.dart';
 import 'package:misaeng/onboarding/login.dart';
-import 'package:misaeng/splash_screen.dart';
+import 'package:misaeng/onboarding/splash_screen.dart';
 
 class MyApp extends StatefulWidget {
   @override
@@ -12,14 +17,14 @@ class MyApp extends StatefulWidget {
 }
 
 void main() => runApp(MaterialApp(
-      home: SplashScreen(),
+      home: RegisterName(),
     ));
 
 class _TestViewState extends State<MyApp> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   int _selectedIndex = 0;
-
+  
   @override
   void initState() {
     super.initState();
@@ -39,86 +44,7 @@ class _TestViewState extends State<MyApp> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(51), // AppBar 높이 설정
-        child: Container(
-          color: Colors.white, // 배경색
-          padding: EdgeInsets.only(
-              top: 44, left: 21, right: 19.5, bottom: 7), // 여백 설정
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 170,
-                height: 32,
-                child: FittedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        'images/logo_main.png', // 로고 이미지 경로
-                        height: 21.76,
-                        width: 51,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        "MISAENG",
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.black,
-                          fontFamily: 'LineEnBd',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                height: 24,
-                width: 80.8,
-                child: FittedBox(
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          // 검색 버튼 동작
-                        },
-                        child: Image.asset(
-                          'images/icon_search.png', // 검색 아이콘 이미지 경로
-                          width: 16.8, // 이미지 너비
-                          height: 16.8, // 이미지 높이
-                        ),
-                      ),
-                      SizedBox(width: 11), // 아이콘 간 간격
-                      GestureDetector(
-                        onTap: () {
-                          // 알림 버튼 동작
-                        },
-                        child: Image.asset(
-                          'images/icon_alarm.png', // 알림 아이콘 이미지 경로
-                          width: 16, // 이미지 너비
-                          height: 18, // 이미지 높이
-                        ),
-                      ),
-                      SizedBox(width: 11), // 아이콘 간 간격
-                      GestureDetector(
-                        onTap: () {
-                          // 메뉴 버튼 동작
-                        },
-                        child: Image.asset(
-                          'images/icon_hamberger_menu.png', // 메뉴 아이콘 이미지 경로
-                          width: 18, // 이미지 너비
-                          height: 15, // 이미지 높이
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      appBar: TopBar(title: "MISAENG"), // 공통 AppBar 사용
       bottomNavigationBar: SizedBox(
         height: 56,
         child: TabBar(

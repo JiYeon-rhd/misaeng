@@ -31,7 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
       MaterialPageRoute(builder: (context) => MyApp()),
     );
   }
-   // 화면 전환을 처리하는 함수
+
+  // 화면 전환을 처리하는 함수
   void _navigateToNextScreen(BuildContext context, String platform) {
     // Navigator.push(
     //   context,
@@ -155,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     border: InputBorder.none, // 테두리 제거
                     prefix: SizedBox(width: 12), // 여백 주기
-                    
+
                     suffixIcon: IconButton(
                       padding: EdgeInsets.only(right: 8), // 아이콘 여백 조정
                       icon: Icon(
@@ -255,47 +256,45 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 20.5),
 
               // 로고 버튼 Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Apple 버튼 (작동하지 않음)
-                Image.asset(
-                  'images/logo_apple.png',
-                  width: 42,
-                  height: 42,
-                ),
-                SizedBox(width: 7.7),
-
-                // Google 버튼 (작동하지 않음)
-                Image.asset(
-                  'images/logo_google.png',
-                  width: 42,
-                  height: 42,
-                ),
-                SizedBox(width: 7.7),
-                
-                // Naver 버튼 (작동하지 않음)
-                Image.asset(
-                  'images/logo_naver.png',
-                  width: 42,
-                  height: 42,
-                ),
-                SizedBox(width: 7.7),
-
-                // KakaoTalk 버튼 (화면 전환 가능)
-                GestureDetector(
-                  onTap: () => _navigateToNextScreen(context, "KakaoTalk"), // 카카오만 작동
-                  child: Image.asset(
-                    'images/logo_kakao.png', // KakaoTalk 로고 이미지 경로
-                    width: 42, // 버튼 크기
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Apple 버튼 (작동하지 않음)
+                  Image.asset(
+                    'images/logo_apple.png',
+                    width: 42,
                     height: 42,
                   ),
-                ),
-              ],
-            ),
+                  SizedBox(width: 7.7),
 
+                  // Google 버튼 (작동하지 않음)
+                  Image.asset(
+                    'images/logo_google.png',
+                    width: 42,
+                    height: 42,
+                  ),
+                  SizedBox(width: 7.7),
 
+                  // Naver 버튼 (작동하지 않음)
+                  Image.asset(
+                    'images/logo_naver.png',
+                    width: 42,
+                    height: 42,
+                  ),
+                  SizedBox(width: 7.7),
 
+                  // KakaoTalk 버튼 (화면 전환 가능)
+                  GestureDetector(
+                    onTap: () =>
+                        _navigateToNextScreen(context, "KakaoTalk"), // 카카오만 작동
+                    child: Image.asset(
+                      'images/logo_kakao.png', // KakaoTalk 로고 이미지 경로
+                      width: 42, // 버튼 크기
+                      height: 42,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
