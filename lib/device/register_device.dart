@@ -22,7 +22,6 @@ class RegisterDevice extends StatelessWidget {
           children: [
             SizedBox(height: 124),
 
-            // NFC 아이콘 (클릭 시 다음 화면으로 이동)
             GestureDetector(
               onTap: onComplete, // NFC 아이콘을 눌렀을 때 onComplete 실행
               child: Image.asset(
@@ -59,6 +58,7 @@ class RegisterDevice extends StatelessWidget {
 
             // 로딩 아이콘
             spinkit,
+
           ],
         ),
       ),
