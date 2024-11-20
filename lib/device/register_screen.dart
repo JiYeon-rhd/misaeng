@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:misaeng/bar/register_top_bar.dart';
 import 'package:misaeng/bar/top_bar.dart';
 import 'package:misaeng/device/register_device.dart';
 import 'package:misaeng/device/register_microbe.dart';
+import 'package:misaeng/device/register_name.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -14,7 +16,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopBar(title: "MISAENG"), // 공통 AppBar 사용
+      appBar: RegisterTopBar(title: "MISAENG"), // 공통 AppBar 사용
+      
       body: PageView(
         controller: _pageController,
         physics: NeverScrollableScrollPhysics(), // 페이지 스와이프 비활성화
@@ -27,7 +30,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               );
             },
           ),
-          RegisterMicrobe(),
+          RegisterMicrobe(
+            onComplete: () {
+              _pageController.nextPage(
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            },
+          ),
+          RegisterName(),
         ],
       ),
     );
