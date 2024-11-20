@@ -15,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final FocusNode _idFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
   // 힌트 표시 여부
-  bool _isHintVisible = true;
+  //bool _isHintVisible = true;
 
   // 비밀번호 보이기/숨기기 토글용 변수
   bool _obscureText = true;

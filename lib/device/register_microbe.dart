@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:misaeng/bar/top_bar.dart';
+import 'package:misaeng/device/register_name.dart';
 import 'package:misaeng/main.dart';
 
 class RegisterMicrobe extends StatelessWidget {
+  late final VoidCallback onComplete;
+  RegisterMicrobe({required this.onComplete});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,12 +84,7 @@ class RegisterMicrobe extends StatelessWidget {
 
             // 완료 버튼
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyApp()),
-                );
-              },
+              onPressed: onComplete,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF007AFF), // 버튼 색상
                 shape: RoundedRectangleBorder(
