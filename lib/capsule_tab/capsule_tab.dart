@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CapsuleTab extends StatelessWidget {
+  const CapsuleTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -4,7 +4,7 @@ import 'package:misaeng/main.dart';
 
 class RegisterMicrobe extends StatelessWidget {
   late final VoidCallback onComplete;
-  RegisterMicrobe({required this.onComplete});
+  RegisterMicrobe({super.key, required this.onComplete});
 
   @override
   Widget build(BuildContext context) {

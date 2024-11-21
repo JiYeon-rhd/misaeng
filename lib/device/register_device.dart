@@ -4,7 +4,7 @@ import 'package:misaeng/device/register_microbe.dart';
 
 class RegisterDevice extends StatelessWidget {
   late final VoidCallback onComplete;
-  RegisterDevice({required this.onComplete});
+  RegisterDevice({super.key, required this.onComplete});
 
   static const spinkit = SpinKitRipple(
     color: Color(0xFF858585),
