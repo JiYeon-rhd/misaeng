@@ -93,7 +93,7 @@ flutter:
     - images/icon_nfc.png
     - images/icon_input_microbe.png
     - images/logo_register.png
-    - images/logo_misaeng.png
+    - images/icon_misaeng.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 }
 
 void main() => runApp(MaterialApp(
-      home: RegisterScreen(),
+      home: MyApp(),
     ));
 
 class _TestViewState extends State<MyApp> with SingleTickerProviderStateMixin {

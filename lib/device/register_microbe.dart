@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:misaeng/device/register_name.dart';
-import 'package:misaeng/main.dart';
 
 class RegisterMicrobe extends StatelessWidget {
   late final VoidCallback onComplete;
