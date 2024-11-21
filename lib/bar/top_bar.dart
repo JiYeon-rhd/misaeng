@@ -4,12 +4,12 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
   // title은 필요에 따라 다르게 표시할 수 있도록 생성자 추가
-  const TopBar({super.key, required this.title});
+  const TopBar({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       elevation: 0,
       title: Row(
         children: [

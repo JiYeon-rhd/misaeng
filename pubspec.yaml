@@ -94,6 +94,9 @@ flutter:
     - images/icon_input_microbe.png
     - images/logo_register.png
     - images/icon_misaeng.png
+    - images/logo_misaeng.png
+    - images/microbe_background.png
+    - images/microbe_bad.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
