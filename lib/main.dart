@@ -12,6 +12,8 @@ import 'package:misaeng/onboarding/login.dart';
 import 'package:misaeng/onboarding/splash_screen.dart';
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   State<MyApp> createState() => _TestViewState();
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:misaeng/main.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -177,19 +179,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // 로그인 버튼
               Center(
-                child: Container(
+                child: SizedBox(
                   width: 191,
                   height: 28,
                   child: ElevatedButton(
                     onPressed: _login,
-                    child: Text(
-                      'login',
-                      style: TextStyle(
-                        fontSize: 16, // 텍스트 크기
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black, // 텍스트 색상
-                      ),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFD9D9D9), // 배경색 설정
                       shape: RoundedRectangleBorder(
@@ -197,6 +191,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             BorderRadius.circular(16), // 둥근 모서리 (이미지와 동일)
                       ),
                       elevation: 0, // 그림자 제거
+                    ),
+                    child: Text(
+                      'login',
+                      style: TextStyle(
+                        fontSize: 16, // 텍스트 크기
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black, // 텍스트 색상
+                      ),
                     ),
                   ),
                 ),

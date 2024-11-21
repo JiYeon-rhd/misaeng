@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:misaeng/onboarding/login.dart'; // 로그인 화면 import
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }

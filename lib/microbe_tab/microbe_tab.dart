@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MicrobeTab extends StatelessWidget {
+  const MicrobeTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(

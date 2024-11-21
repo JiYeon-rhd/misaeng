@@ -4,7 +4,7 @@ class RegisterTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
   // title은 필요에 따라 다르게 표시할 수 있도록 생성자 추가
-  const RegisterTopBar({Key? key, required this.title}) : super(key: key);
+  const RegisterTopBar({super.key, required this.title});
 
 
   @override
