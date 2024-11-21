@@ -6,7 +6,7 @@ class HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black,
+      color: const Color.fromARGB(255, 214, 170, 170),
       child: Center(
         child: Text(
           "홈 탭",
