@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:misaeng/device/register_microbe.dart';
 
 class RegisterDevice extends StatelessWidget {
   late final VoidCallback onComplete;
