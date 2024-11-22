@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:misaeng/bar/register_top_bar.dart';
-import 'package:misaeng/device/register_device.dart';
-import 'package:misaeng/device/register_microbe.dart';
-import 'package:misaeng/device/register_name.dart';
+import 'package:misaeng/register/register_device.dart';
+import 'package:misaeng/register/register_microbe.dart';
+import 'package:misaeng/register/register_name.dart';
 import 'package:misaeng/main.dart';
 
 class RegisterScreen extends StatefulWidget {
