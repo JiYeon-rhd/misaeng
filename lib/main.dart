@@ -21,47 +21,60 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this); // TabController 초기화
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 4, // 탭의 개수
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: TopBar(title: "MISAENG"), // 공통 AppBar
-        bottomNavigationBar: const TabBar(
-          indicatorColor: Colors.transparent,
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
-          tabs: <Widget>[
-            Tab(
-              icon: Icon(Icons.account_balance_outlined),
-              text: "홈",
-            ),
-            Tab(
-              icon: Icon(Icons.add_circle_outline),
-              text: "미생물",
-            ),
-            Tab(
-              icon: Icon(Icons.adb_rounded),
-              text: "캡슐",
-            ),
-            Tab(
-              icon: Icon(Icons.account_circle_outlined),
-              text: "마이",
-            ),
-          ],
-        ),
-        body: const TabBarView(
-          children: <Widget>[
-            HomeTab(),
-            MicrobeTab(),
-            CapsuleTab(),
-            MyTab(),
-          ],
-        ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: TopBar(title: "MISAENG"), // 공통 AppBar
+      bottomNavigationBar: TabBar(
+        controller: _tabController, // TabController 연결
+        indicatorColor: Colors.transparent,
+        labelColor: Colors.black,
+        unselectedLabelColor: Colors.grey,
+        tabs: const <Widget>[
+          Tab(
+            icon: Icon(Icons.account_balance_outlined),
+            text: "홈",
+          ),
+          Tab(
+            icon: Icon(Icons.add_circle_outline),
+            text: "미생물",
+          ),
+          Tab(
+            icon: Icon(Icons.adb_rounded),
+            text: "캡슐",
+          ),
+          Tab(
+            icon: Icon(Icons.account_circle_outlined),
+            text: "마이",
+          ),
+        ],
+      ),
+      body: TabBarView(
+        controller: _tabController, // TabController 연결
+        children: [
+          HomeTab(),
+          MicrobeTab(),
+          CapsuleTab(),
+          MyTab(),
+        ],
       ),
     );
   }
