@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:misaeng/microbe_tab/foodwaste_input_record.dart';
+import 'package:misaeng/microbe_tab/foodwaste_record.dart';
 import 'package:misaeng/microbe_tab/microbe_info.dart';
 
 class MicrobeTab extends StatefulWidget {
@@ -113,7 +113,7 @@ class _MicrobeTabState extends State<MicrobeTab> {
           ),
           child: Center(
             child: Image.asset(
-              'images/microbe_bad.png', // 미생이 이미지
+              'images/microbe_bad_blue.png', // 미생이 이미지
               width: 156, // 이미지 크기
               height: 111,
             ),
@@ -382,7 +382,7 @@ class _MicrobeTabState extends State<MicrobeTab> {
   void _navigateToFoodWastePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const FoodWasteInputRecord()),
+      MaterialPageRoute(builder: (context) => const FoodWasteRecord()),
     );
   }
 
