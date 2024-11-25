@@ -28,9 +28,12 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  motion_tab_bar: ^2.0.4
   carousel_slider: ^5.0.0
   flutter_spinkit: ^5.1.0
   table_calendar: ^3.1.2
+  google_nav_bar: ^5.0.7
+  line_icons: ^2.0.1
   flutter:
     sdk: flutter
 
@@ -38,6 +41,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  motion_tab_bar_v2: ^0.3.0
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +84,9 @@ flutter:
     - family: LineKrRg
       fonts:
         - asset: fonts/LINESeedKR-Rg.ttf
+    - family: NaviHome
+      fonts: 
+        - asset: fonts/navi_home.ttf
 
   # To add assets to your application, add an assets section, like this:
   assets:
@@ -111,6 +118,9 @@ flutter:
     - images/icon_premium.png
     - images/icon_standard.png
     - images/icon_basic.png
+    - images/navi_capsule.png
+    - images/navi_home.png
+    - images/navi_my.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
