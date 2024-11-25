@@ -26,6 +26,7 @@ class _MicrobeTabState extends State<MicrobeTab> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            SizedBox(height: 12),
             _buildMicrobeName(microbeName),
             const SizedBox(height: 16),
             // 미생이 캐릭터와 말풍선

@@ -107,6 +107,10 @@ flutter:
     - images/capsule_carbs.png
     - images/capsule_multi.png
     - images/capsule_protein.png
+    - images/icon_user.png
+    - images/icon_premium.png
+    - images/icon_standard.png
+    - images/icon_basic.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
