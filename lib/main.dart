@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:misaeng/bar/top_bar.dart';
 import 'package:misaeng/home_tab/home_tab.dart';
 import 'package:misaeng/icon/custom_icons_icons.dart';
