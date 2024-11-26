@@ -129,7 +129,7 @@ class _EditRecordState extends State<EditRecord> {
             borderRadius: BorderRadius.circular(12),
           ),
           side: isSelected
-              ? BorderSide(color: Colors.grey, width: 2)
+              ? BorderSide(color: Colors.grey, width: 1)
               : BorderSide.none,
           elevation: 0,
         ),

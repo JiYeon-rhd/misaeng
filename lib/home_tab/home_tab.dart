@@ -6,11 +6,11 @@ class HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(255, 214, 170, 170),
+      color: const Color.fromARGB(255, 255, 255, 255),
       child: Center(
         child: Text(
           "홈 탭",
-          style: TextStyle(color: Colors.white, fontSize: 24),
+          style: TextStyle(color: const Color.fromARGB(255, 77, 77, 77), fontSize: 24),
         ),
       ),
     );
