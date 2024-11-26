@@ -42,6 +42,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   motion_tab_bar_v2: ^0.3.0
+  flutter_svg: ^2.0.15
 
 dev_dependencies:
   flutter_test:
@@ -84,9 +85,10 @@ flutter:
     - family: LineKrRg
       fonts:
         - asset: fonts/LINESeedKR-Rg.ttf
-    - family: NaviHome
-      fonts: 
-        - asset: fonts/navi_home.ttf
+    - family: CustomIcons
+      fonts:
+        - asset: fonts/CustomIcons.ttf
+
 
   # To add assets to your application, add an assets section, like this:
   assets:

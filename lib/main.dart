@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:misaeng/bar/top_bar.dart';
 import 'package:misaeng/home_tab/home_tab.dart';
+import 'package:misaeng/icon/custom_icons_icons.dart';
 import 'package:misaeng/microbe_tab/microbe_tab.dart';
 import 'package:misaeng/capsule_tab/capsule_tab.dart';
 import 'package:misaeng/my_tab/my_tab.dart';
@@ -83,32 +85,32 @@ class _MainAppState extends State<MainApp> {
           haptic: true, // haptic feedback
           tabBorderRadius: 40, // 둥근 모서리로 강조
           //curve: Curves.linear, // 자연스러운 애니메이션 곡선
-          duration: const Duration(milliseconds: 400), // 애니메이션 지속시간
+          duration: const Duration(milliseconds: 450), // 애니메이션 지속시간
           gap: 8, // 아이콘과 텍스트 간 간격
-          color: Colors.grey[800]!, // 비활성 아이콘 색상
+          color: Color(0xFF333333)!, // 비활성 아이콘 색상
           activeColor: const Color.fromARGB(255, 255, 255, 255), // 활성 아이콘 및 텍스트 색상
-          iconSize: 24, // 아이콘 크기
+          iconSize: 30, // 아이콘 크기
           tabBackgroundColor: Color.fromARGB(233, 0, 123, 255), // 활성 탭 배경색
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 11), // 활성 탭 패딩
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9), // 활성 탭 패딩
           selectedIndex: _selectedIndex,
           tabs: const [
             GButton(
-              icon: LineIcons.home,
+              icon: CustomIcons.navi_home,
               text: 'Home',
               textStyle: const TextStyle(fontSize: 14, fontFamily: "LineEnBd", color: Colors.white), // 글꼴과 크기
             ),
             GButton(
-              icon: LineIcons.heart,
+              icon: CustomIcons.navi_microbe,
               text: 'Microbe',
               textStyle: const TextStyle(fontSize: 14, fontFamily: "LineEnBd", color: Colors.white),
             ),
             GButton(
-              icon: LineIcons.search,
+              icon: CustomIcons.navi_capsule,
               text: 'Capsule',
               textStyle: const TextStyle(fontSize: 14, fontFamily: "LineEnBd", color: Colors.white),
             ),
             GButton(
-              icon: LineIcons.user,
+              icon: CustomIcons.navi_my,
               text: 'My',
               textStyle: const TextStyle(fontSize: 14, fontFamily: "LineEnBd", color: Colors.white),
             ),
