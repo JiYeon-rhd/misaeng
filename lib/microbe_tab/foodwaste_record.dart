@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:misaeng/bar/top_bar_L2.dart';
 import 'package:misaeng/microbe_tab/edit_record.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class FoodWasteRecord extends StatefulWidget {
   const FoodWasteRecord({super.key});
@@ -100,59 +101,66 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
   }
 
   Widget _buildCalendar() {
-    return TableCalendar(
-      firstDay: DateTime(2022),
-      lastDay: DateTime(2025),
-      focusedDay: _focusedDate,
-      selectedDayPredicate: (day) => isSameDay(_selectedDate, day),
-      onDaySelected: _onDaySelected,
-      onPageChanged: _onMonthChanged,
-      calendarStyle: CalendarStyle(
-        selectedDecoration: BoxDecoration(
-          color: const Color.fromARGB(255, 187, 187, 187),
-          shape: BoxShape.circle,
-        ),
-        selectedTextStyle: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-        todayDecoration: BoxDecoration(
-          border: Border.all(
-            color: const Color.fromARGB(255, 187, 187, 187),
-            width: 2.0,
+    return Center(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.95,
+        child: TableCalendar(
+          firstDay: DateTime(2022),
+          lastDay: DateTime(2025),
+          focusedDay: _focusedDate,
+          selectedDayPredicate: (day) => isSameDay(_selectedDate, day),
+          onDaySelected: _onDaySelected,
+          onPageChanged: _onMonthChanged,
+          locale: 'ko_KR',
+          rowHeight: 52,
+          calendarStyle: CalendarStyle(
+            selectedDecoration: BoxDecoration(
+              color: const Color.fromARGB(255, 187, 187, 187),
+              shape: BoxShape.circle,
+            ),
+            selectedTextStyle: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+            todayDecoration: BoxDecoration(
+              border: Border.all(
+                color: const Color.fromARGB(255, 187, 187, 187),
+                width: 2.0,
+              ),
+              shape: BoxShape.circle,
+            ),
+            todayTextStyle: const TextStyle(
+              color: Colors.black,
+            ),
           ),
-          shape: BoxShape.circle,
+          headerStyle: const HeaderStyle(
+            formatButtonVisible: false,
+            titleCentered: true,
+            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          calendarBuilders: CalendarBuilders(
+            defaultBuilder: (context, day, focusedDay) {
+              if (_isRestrictedDay(day)) {
+                return Container(
+                  margin: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFFFF0000),
+                      width: 2,
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${day.day}',
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                );
+              }
+              return null;
+            },
+          ),
         ),
-        todayTextStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
-      headerStyle: const HeaderStyle(
-        formatButtonVisible: false,
-        titleCentered: true,
-        titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      calendarBuilders: CalendarBuilders(
-        defaultBuilder: (context, day, focusedDay) {
-          if (_isRestrictedDay(day)) {
-            return Container(
-              margin: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color(0xFFFF0000),
-                  width: 2,
-                ),
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                '${day.day}',
-                style: const TextStyle(color: Colors.black),
-              ),
-            );
-          }
-          return null;
-        },
       ),
     );
   }
@@ -275,11 +283,11 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
   IconData _getStateIcon(String? state) {
     switch (state) {
       case '금지 음식':
-        return Icons.warning;
+        return Icons.warning_amber_sharp;
       case '미생물 분해 중':
         return Icons.loop;
       case '미생물 분해 완료':
-        return Icons.check_circle;
+        return Icons.check_circle_outline;
       default:
         return Icons.info;
     }
@@ -290,11 +298,11 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
       case '금지 음식':
         return Colors.red;
       case '미생물 분해 중':
-        return Colors.orange;
+        return Color(0xFF007AFF);
       case '미생물 분해 완료':
-        return Colors.green;
+        return Color(0xFF007AFF);
       default:
-        return Colors.grey;
+        return Color(0xFF007AFF);
     }
   }
 

@@ -111,11 +111,11 @@ class MyTab extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 19, vertical: 12),
           ),
           onPressed: () {
-            // as 설정 페이지로 이동
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ServiceRequest()),
-            );
+            // // as 설정 페이지로 이동
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => const ServiceRequest()),
+            // );
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
