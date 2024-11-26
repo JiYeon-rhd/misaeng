@@ -78,6 +78,7 @@ class _MicrobeTabState extends State<MicrobeTab> {
             'images/logo_misaeng.png',
             width: 25.98,
             height: 24.47,
+            
           ),
           SizedBox(width: 8),
           _buildText(microbeName, "LineKrBd", 20, Color(0xFF333333)),
