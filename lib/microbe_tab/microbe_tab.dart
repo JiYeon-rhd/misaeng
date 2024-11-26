@@ -10,7 +10,9 @@ class MicrobeTab extends StatefulWidget {
 class _MicrobeTabState extends State<MicrobeTab> {
   bool isExpanded = false; // 음식 분해 상태를 펼칠지 여부
   String microbeName = "미생이2"; // 미생물 별명
-  String microbeState = "상태가 좋지 않습니다.."; // 미생이 상태
+  String microbeMessage = "상태가 좋지 않습니다.."; // 미생이 건강 상태
+  String microbeMood  = "bad"; // 미생이 상태 
+  Color microbeColor = Color.fromARGB(255, 40, 147, 255);
   String temperatureStatus = "높음"; // (높음 / 적절 / 낮음 )
   String humidityStatus = "낮음"; // (높음 / 적절 / 낮음 )
   String foodProcessorStatus = "현재 절전 모드 입니다."; // 현재 음식물 처리기 모드
@@ -78,7 +80,6 @@ class _MicrobeTabState extends State<MicrobeTab> {
             'images/logo_misaeng.png',
             width: 25.98,
             height: 24.47,
-            
           ),
           SizedBox(width: 8),
           _buildText(microbeName, "LineKrBd", 20, Color(0xFF333333)),
@@ -114,10 +115,23 @@ class _MicrobeTabState extends State<MicrobeTab> {
             ),
           ),
           child: Center(
-            child: Image.asset(
-              'images/microbe_bad_blue.png', // 미생이 이미지
-              width: 156, // 이미지 크기
-              height: 111,
+            child: Stack(
+              alignment: Alignment.center, // 중앙 정렬
+              children: [
+                Image.asset(
+                  'images/microbe_shape.png', // 기본 미생이 이미지
+                  width: 156,
+                  height: 111,
+                  color: microbeColor
+                ),
+                Image.asset(
+                  microbeMood == 'bad'
+                    ? 'images/microbe_bad.png'
+                    : 'images/microbe_smile.png',
+                  width: 156,
+                  height: 111,
+                ),
+              ],
             ),
           ),
         ),
@@ -141,7 +155,7 @@ class _MicrobeTabState extends State<MicrobeTab> {
             alignment: Alignment.center,
             child: Text(
               textAlign: TextAlign.center, // 텍스트 중앙 정렬
-              "$microbeState",
+              "$microbeMessage",
               style: const TextStyle(fontSize: 12, fontFamily: "LineKrBd"),
             ),
           ),
@@ -388,11 +402,19 @@ class _MicrobeTabState extends State<MicrobeTab> {
     );
   }
 
-  // 음식물 투입 기록 페이지로 이동하는 함수
-  void _navigateToInfoPage() {
-    Navigator.push(
+  // 미생물 정보 페이지로 이동하는 함수
+  void _navigateToInfoPage() async {
+    final selectedColor = await Navigator.push<Color>(
       context,
-      MaterialPageRoute(builder: (context) => const MicrobeInfo()),
+      MaterialPageRoute(
+        builder: (context) => MicrobeInfo(initialColor: microbeColor),
+      ),
     );
+
+    if (selectedColor != null) {
+      setState(() {
+        microbeColor = selectedColor; // 선택된 색상 적용
+      });
+    }
   }
 }

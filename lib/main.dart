@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:misaeng/bar/top_bar.dart';
 import 'package:misaeng/home_tab/home_tab.dart';
 import 'package:misaeng/icon/custom_icons_icons.dart';
@@ -7,12 +8,16 @@ import 'package:misaeng/capsule_tab/capsule_tab.dart';
 import 'package:misaeng/my_tab/my_tab.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
-void main() => runApp(
-      const MaterialApp(
-        home: MyApp(),
-        debugShowCheckedModeBanner: false, // 디버그 배너 제거
-      ),
-    );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진 초기화
+  await initializeDateFormatting(); // 날짜/시간 로케일 초기화
+  runApp(
+    const MaterialApp(
+      home: MyApp(),
+      debugShowCheckedModeBanner: false, // 디버그 배너 제거
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
