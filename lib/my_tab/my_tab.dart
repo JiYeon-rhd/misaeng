@@ -11,7 +11,7 @@ class MyTab extends StatelessWidget {
   final String microbeName = "미생이";
   final String subStartDay = "2024.06.07";
   final String subEndDay = "2025.06.06";
-  final String mySubState = "프리미엄";
+  final String mySubState = "베이직";
   final String servicesDate = "2024. 12. 16 (월)";
   final String servicesTime = "오후 5시 00분";
 
@@ -20,14 +20,13 @@ class MyTab extends StatelessWidget {
     return Scaffold(
       body: Container(
         color: Colors.white, // 배경색 흰색
-
         child: ListView(
           children: [
             SizedBox(height: 12),
             Row(children: [
               SizedBox(width: 20),
               Image.asset(
-                'images/logo_misaeng.png',
+                'images/icon_user.png',
                 width: 25.98,
                 height: 24.47,
               ),
