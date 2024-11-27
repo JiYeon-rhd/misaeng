@@ -2,49 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:misaeng/bar/top_bar_L2.dart';
 
 // 자리 비움 설정 페이지
-class LeaveSetting extends StatefulWidget {
-  const LeaveSetting({super.key});
+class AutoOpen extends StatefulWidget {
+  const AutoOpen({super.key});
 
   @override
-  _LeaveSettingState createState() => _LeaveSettingState();
+  _AutoOpenState createState() => _AutoOpenState();
 }
 
-class _LeaveSettingState extends State<LeaveSetting> {
-  int activationTime = 12; // 활성화 대기 시간 기본 값
-  int capsuleTourTime = 6; // 캡슐 투어 시간 기본 값
+class _AutoOpenState extends State<AutoOpen> {
+  int autoOpenTime = 5; // 활성화 대기 시간 기본 값
 
-  // 활성화 대기 시간 +
-  void _incrementActivationTime() {
-    if (activationTime < 24) {
+  // 문 자동 닫힘 +
+  void _incrementAutoOpenTime() {
+    if (autoOpenTime < 10) {
       setState(() {
-        activationTime++;
+        autoOpenTime++;
       });
     }
   }
 
-  // 활성화 대기 시간 +
-  void _decrementActivationTime() {
-    if (activationTime > 1) {
+  // 문 자동 닫힘 +
+  void _decrementAutoOpenTime() {
+    if (autoOpenTime > 3) {
       setState(() {
-        activationTime--;
-      });
-    }
-  }
-
-  // 캡슐투어 시간 +
-  void _incrementCapsuleTourTime() {
-    if (capsuleTourTime < 24) {
-      setState(() {
-        capsuleTourTime++;
-      });
-    }
-  }
-
-  // 캡슐투어 시간 -
-  void _decrementCapsuleTourTime() {
-    if (capsuleTourTime > 1) {
-      setState(() {
-        capsuleTourTime--;
+        autoOpenTime--;
       });
     }
   }
@@ -68,7 +49,7 @@ class _LeaveSettingState extends State<LeaveSetting> {
               ),
               const SizedBox(height: 16),
               Text(
-                '활성화 대기 시간: $activationTime 시간\n캡슐 투어 시간: $capsuleTourTime 시간',
+                '문 자동 닫힘 시간 : $autoOpenTime 초',
                 style: const TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
@@ -88,33 +69,21 @@ class _LeaveSettingState extends State<LeaveSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: TopBarL2(title: "자리 비움 설정"),
+      appBar: TopBarL2(title: "문 자동 닫힘 시간 설정"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
             const SizedBox(height: 20),
             _buildTimeSetting(
-              title: "활성화 대기 시간",
-              time: activationTime,
-              onIncrement: _incrementActivationTime,
-              onDecrement: _decrementActivationTime,
+              title: "문 닫힘 대기 시간",
+              time: autoOpenTime,
+              onIncrement: _incrementAutoOpenTime,
+              onDecrement: _decrementAutoOpenTime,
             ),
             const SizedBox(height: 13),
             const Text(
-              "미생물 상태에 맞춰 자동으로 필요한 캡슐이 투여됩니다.",
-              style: TextStyle(fontFamily: "LineKrRg", fontSize: 13),
-            ),
-            const SizedBox(height: 35),
-            _buildTimeSetting(
-              title: "캡슐 투어 시간",
-              time: capsuleTourTime,
-              onIncrement: _incrementCapsuleTourTime,
-              onDecrement: _decrementCapsuleTourTime,
-            ),
-            const SizedBox(height: 13),
-            const Text(
-              "미생물 상태에 맞춰 자동으로 필요한 캡슐이 투여됩니다.",
+              "상단 문이 열린 후, 다시 닫힐 때까지의 간격을 설정합니다.",
               style: TextStyle(fontFamily: "LineKrRg", fontSize: 13),
             ),
             const SizedBox(height: 50),
@@ -181,10 +150,10 @@ class _LeaveSettingState extends State<LeaveSetting> {
               ),
               const SizedBox(width: 11),
               const Text(
-                '시간',
+                '초',
                 style: TextStyle(fontFamily: "LindKrRg", fontSize: 16),
               ),
-              SizedBox(width: 11),
+              SizedBox(width: 10),
               // - 버튼
               Container(
                 width: 100,
