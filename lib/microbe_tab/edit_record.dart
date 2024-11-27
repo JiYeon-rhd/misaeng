@@ -90,26 +90,40 @@ class _EditRecordState extends State<EditRecord> {
 
   Widget _buildInfoRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            "금지 음식을 주의하세요!",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Color(0xFFFF0000), // 테두리 색상 빨강
+                width: 1, // 테두리 두께
+              ),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "금지 음식을 주의하세요!",
+                  style: TextStyle(
+                    color: Color(0xFFFF0000), // 텍스트 색상 빨강
+                    fontSize: 16,
+                    fontFamily: "LineKrRg",
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.help_outline, // 아이콘
+                    color: Color(0xFFFF0000), // 아이콘 색상 빨강
+                    size: 20,
+                  ), // 아이콘 버튼
+                  onPressed: _showInfoDialog, // 버튼 동작 함수 연결
+                ),
+              ],
             ),
           ),
-        ),
-        IconButton(
-          icon: Icon(Icons.help_outline, color: Colors.red),
-          onPressed: _showInfoDialog,
         ),
       ],
     );
@@ -126,7 +140,7 @@ class _EditRecordState extends State<EditRecord> {
           foregroundColor: Color(0xFF333333),
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(4),
           ),
           side: isSelected
               ? BorderSide(color: Colors.grey, width: 1)
@@ -137,7 +151,7 @@ class _EditRecordState extends State<EditRecord> {
           label,
           style: TextStyle(
             fontSize: 14,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontFamily: "LineKrRg",
           ),
           textAlign: TextAlign.center,
         ),
@@ -154,7 +168,7 @@ class _EditRecordState extends State<EditRecord> {
         crossAxisCount: 2,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
-        childAspectRatio: 3.5,
+        childAspectRatio: 4,
       ),
       itemBuilder: (context, index) {
         final category = allCategories[index];
@@ -175,70 +189,111 @@ class _EditRecordState extends State<EditRecord> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isBlurred = !_isBlurred;
-                  });
-                },
-                child: Stack(
+              Container(
+                padding: EdgeInsets.all(22), // 전체 패딩
+                decoration: BoxDecoration(
+                  color: Color(0xFFF8F8F8), // 회색 배경
+                  borderRadius: BorderRadius.circular(12), // 둥근 모서리
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        widget.record['imgUrl'] ?? 'images/placeholder.png',
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    if (_isBlurred)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                          child: Container(
-                            height: 200,
-                            width: double.infinity,
-                            color: Colors.black.withOpacity(0.1),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${widget.date.year}년 ${widget.date.month.toString().padLeft(2, '0')}월 ${widget.date.day.toString().padLeft(2, '0')}일',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF333333),
+                                fontFamily: "LineKrRg",
+                              ),
+                            ),
+                            Text(
+                              '${widget.record['time']}',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFF333333),
+                                  fontFamily: "LineKrRg"),
+                            ),
+                          ],
+                        ),
+                        RichText(
+                          textAlign: TextAlign.center, // 텍스트 중앙 정렬
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '투여량\n', // "투여량" 텍스트
+                                style: TextStyle(
+                                  fontSize: 16, // 기본 크기
+                                  color: Color(0xFF333333),
+                                  fontFamily: "LineKrRg",
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    '${widget.record['weight'].toStringAsFixed(1)}', // 무게 값
+                                style: TextStyle(
+                                  fontSize: 26, // 강조된 크기
+                                  color: Color(0xFF333333),
+                                  fontFamily: "LineKrRg",
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' kg', // "kg" 텍스트
+                                style: TextStyle(
+                                  fontSize: 26, // 강조된 크기
+                                  color: Color(0xFF333333),
+                                  fontFamily: "LineKrRg",
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                      ],
+                    ),
+                    SizedBox(height: 30), // 간격 추가
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isBlurred = !_isBlurred;
+                        });
+                      },
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              widget.record['imgUrl'] ??
+                                  'images/placeholder.png',
+                              height: 278,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          if (_isBlurred)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                child: Container(
+                                  height: 278,
+                                  width: double.infinity,
+                                  color: Colors.black.withOpacity(0.1),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
+                    ),
                   ],
                 ),
               ),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${widget.date.year}년 ${widget.date.month.toString().padLeft(2, '0')}월 ${widget.date.day.toString().padLeft(2, '0')}일',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'PM ${widget.record['time']}',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    '투여량\n${widget.record['weight'].toStringAsFixed(1)} kg',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
+
+              SizedBox(height: 30),
               _buildInfoRow(),
               SizedBox(height: 16),
               _buildCategoryGrid(),
@@ -250,15 +305,15 @@ class _EditRecordState extends State<EditRecord> {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    backgroundColor: Color(0xFF007AFF),
+                    padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: Text(
                     '저장하기',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "LineKrBd"),
                   ),
                 ),
               ),

@@ -127,6 +127,10 @@ flutter:
     - images/microbe_bad.png
     - images/microbe_smile.png
     - images/microbe_shape.png
+    - images/icon_microbe_info.png
+    - images/icon_foodwaste_record.png
+    - images/icon_arrow_right.png
+    - images/icon_modify.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
