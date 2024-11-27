@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:misaeng/my_tab/my_add_device.dart';
 import 'package:misaeng/my_tab/my_leave_setting.dart';
-import 'package:misaeng/my_tab/my_service_request.dart';
+import 'package:misaeng/my_tab/my_auto_open.dart';
 import 'package:misaeng/my_tab/my_subscription_info.dart';
 
 class MyTab extends StatelessWidget {
@@ -31,7 +31,7 @@ class MyTab extends StatelessWidget {
                 height: 24.47,
               ),
               SizedBox(width: 8),
-              _buildText("사용자", Color(0xFF333333), 20, "LineKrBd"),
+              _buildText("사용자", Color(0xFF333333), 20, "LineKrRg"),
             ]),
             SizedBox(height: 40),
 
@@ -59,6 +59,13 @@ class MyTab extends StatelessWidget {
             _buildLeaveInfo(context),
             SizedBox(height: 24),
 
+            // 문 자동 닫힘 시간 설정
+            _buildTextTitle("문 자동 닫힘 시간 설정"),
+            SizedBox(height: 12),
+            _buildAutoOpen(context),
+            SizedBox(height: 20),
+
+ 
 
             // 점검 방문 | A/S 요청
             _buildTextTitle("점검 방문 | A/S 요청"),
@@ -88,14 +95,60 @@ class MyTab extends StatelessWidget {
   Padding _buildTextTitle(String text) {
     return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 22),
-            child: _buildText(text, Color(0xFF333333), 16, "LineKrBd"),
+            child: _buildText(text, Color(0xFF333333), 16, "LineKrRg"),
           );
   }
 
   Padding _buildTextList(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-      child: _buildText(text, Color(0xFF333333), 16, "LineKrBd"),
+      child: _buildText(text, Color(0xFF333333), 16, "LineKrRg"),
+    );
+  }
+
+
+  Padding _buildAutoOpen(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        decoration: _buildBoxDecoration(),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white, // 버튼 텍스트 색상
+            elevation: 0, // 기본 그림자 제거 (Container에서 그림자를 설정)
+            padding: EdgeInsets.symmetric(horizontal: 19, vertical: 12),
+          ),
+          onPressed: () {
+            // as 설정 페이지로 이동
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AutoOpen()),
+            );
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildText("자동 닫힘 간격을 설정합니다.", Color(0xFF333333), 12, "LineKrRg"),
+                  Row(
+                    children: [
+                      _buildText(
+                          "시간 설정", Color(0xFF007AFF), 14, "LineKrRg"),
+                      SizedBox(width: 4), // 텍스트와 아이콘 사이 간격
+                      Icon(Icons.chevron_right_outlined,
+                          color: Color(0xFF007AFF), size: 22), // 시간 아이콘
+                    ],
+                  ),
+                ],
+              ),
+              
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -111,10 +164,10 @@ class MyTab extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 19, vertical: 12),
           ),
           onPressed: () {
-            // // as 설정 페이지로 이동
+            // as 설정 페이지로 이동
             // Navigator.push(
             //   context,
-            //   MaterialPageRoute(builder: (context) => const ServiceRequest()),
+            //   MaterialPageRoute(builder: (context) => const AutoOpen()),
             // );
           },
           child: Column(
@@ -124,11 +177,11 @@ class MyTab extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildText("정기 방문일", Color(0xFF333333), 12, "LineKrBd"),
+                  _buildText("정기 방문일", Color(0xFF333333), 12, "LineKrRg"),
                   Row(
                     children: [
                       _buildText(
-                          "서비스 요청 및 일정 변경", Color(0xFF007AFF), 14, "LineKrBd"),
+                          "서비스 요청 및 일정 변경", Color(0xFF007AFF), 14, "LineKrRg"),
                       SizedBox(width: 4), // 텍스트와 아이콘 사이 간격
                       Icon(Icons.chevron_right_outlined,
                           color: Color(0xFF007AFF), size: 22), // 시간 아이콘
@@ -138,7 +191,7 @@ class MyTab extends StatelessWidget {
               ),
               SizedBox(height: 8),
               _buildText("${servicesDate} / ${servicesTime}", Color(0xFF333333),
-                  14, "LineKrBd")
+                  14, "LineKrRg")
             ],
           ),
         ),
@@ -175,7 +228,7 @@ class MyTab extends StatelessWidget {
                       Color(0xFF333333), 12, "LineKrRg"),
                   Row(
                     children: [
-                      _buildText("시간 설정", Color(0xFF007AFF), 14, "LineKrBd"),
+                      _buildText("시간 설정", Color(0xFF007AFF), 14, "LineKrRg"),
                       SizedBox(width: 4), // 텍스트와 아이콘 사이 간격
                       Icon(Icons.chevron_right_outlined,
                           color: Color(0xFF007AFF), size: 22), // 시간 아이콘
@@ -218,7 +271,7 @@ class MyTab extends StatelessWidget {
               _buildText("구독 기간", Color(0xFF333333), 14, "LineKrRg"),
               SizedBox(height: 5),
               _buildText("${subStartDay} ~ ${subEndDay}", Color(0xFF333333), 14,
-                  "LineKrBd"),
+                  "LineKrRg"),
               SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -232,7 +285,7 @@ class MyTab extends StatelessWidget {
                         "${mySubState} 케어",
                         Color(0xFF333333),
                         14,
-                        "LineKrBd",
+                        "LineKrRg",
                       ),
                     ],
                   ),
@@ -268,7 +321,7 @@ class MyTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 19.0), // 내부 패딩
               alignment: Alignment.center, // 중앙 정렬
               child: _buildText("${deviceName} & ${microbeName}", Colors.white,
-                  14, "LineKrBd")),
+                  14, "LineKrRg")),
           SizedBox(width: 11),
           // + 버튼
           Container(
@@ -307,7 +360,7 @@ class MyTab extends StatelessWidget {
             backgroundImage: AssetImage('images/logo_kakao.png'), // 프로필 이미지 경로
             backgroundColor: Colors.transparent, // 배경 제거
           ),
-          title: _buildText(userName, Color(0xFF333333), 18, "LineKrBd"),
+          title: _buildText(userName, Color(0xFF333333), 18, "LineKrRg"),
           subtitle: _buildText(userEmail, Color(0xFF333333), 10, "LineKrRg"),
           trailing: Icon(Icons.more_horiz,
               color: Color(0xFF333333), size: 21), // 검정 아이콘
