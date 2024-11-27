@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:misaeng/bar/top_bar_L2.dart';
+
 class MicrobeInfo extends StatefulWidget {
   final Color initialColor; // 초기 색상을 전달받음
   const MicrobeInfo({super.key, required this.initialColor});
@@ -21,15 +22,15 @@ class _MicrobeInfoState extends State<MicrobeInfo> {
     Colors.red,
   ];
 
-   @override
+  @override
   void initState() {
     super.initState();
     microbeColor = widget.initialColor; // 초기 색상 설정
     _isColorPickerEnabled = availableColors.contains(microbeColor);
   }
 
-
   // 동적으로 변경될 날짜 및 D-Day 정보
+  String _microbeName = "미생이";
   String _microbeDate = "2024년 06월 15일";
   String _dDay = "D + 1";
   String _averageLifespan = "365일";
@@ -52,71 +53,93 @@ class _MicrobeInfoState extends State<MicrobeInfo> {
             _buildMicrobeLife(),
 
             const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildText("미생물 꾸미기", "LineKrRg", 16, Color(0xFF333333)),
+                _buildText("미생물의 색은 그날 처리한 음식에 맞춰 변화합니다.", "LineKrRg", 10, Color(0xFF333333))
+              ],
+            ),
+            SizedBox(height: 9),
 
             // 색상 선택 토글
             _buildCustomColorToggle(),
-            const SizedBox(height: 20),
-
             // 색상 선택 UI
-            if (_isColorPickerEnabled)
-              _buildSelectCustomColor(context),
+            //if (_isColorPickerEnabled) _buildSelectCustomColor(context),
           ],
         ),
       ),
     );
   }
-
-  Row _buildCustomColorToggle() {
-    return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "색상 직접 고르기",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Switch(
-                value: _isColorPickerEnabled,
-                onChanged: (value) {
+Widget _buildCustomColorToggle() {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    decoration: BoxDecoration(
+      color: const Color(0xFFF8F8F8), // 회색 배경
+      borderRadius: BorderRadius.circular(14), // 모서리 둥글게
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "색상 직접 고르기",
+              style: TextStyle(fontSize: 14, fontFamily: "LineKrRg"),
+            ),
+            Switch(
+              value: _isColorPickerEnabled,
+              activeColor: Colors.white, // 토글 ON 상태에서 손잡이 색상 (흰색)
+              activeTrackColor: const Color(0xFF007AFF), // 토글 ON 상태에서 트랙 색상 (파란색)
+              inactiveThumbColor: const Color.fromARGB(255, 255, 255, 255),
+              inactiveTrackColor: const Color(0xFFE0E0E0), // 토글 OFF 상태에서 트랙 색상
+              splashRadius: 0, // 스플래시 효과 제거
+              onChanged: (value) {
+                setState(() {
+                  _isColorPickerEnabled = value; // 상태 변경
+                });
+              },
+            ),
+          ],
+        ),
+        if (_isColorPickerEnabled) ...[
+          const SizedBox(height: 16), // 토글과 색상 선택 간격
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: availableColors.map((color) {
+              return GestureDetector(
+                onTap: () {
                   setState(() {
-                    _isColorPickerEnabled = value;
+                    microbeColor = color; // 선택한 색상으로 업데이트
                   });
+                  _showConfirmationMessage(context, color);
                 },
-              ),
-            ],
-          );
-  }
-
-  Wrap _buildSelectCustomColor(BuildContext context) {
-    return Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: availableColors.map((color) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      microbeColor = color; // 선택한 색상으로 업데이트
-                      _isColorPickerEnabled = true; // 색상 지정 토글을 항상 활성화
-                    });
-                    _showConfirmationMessage(context, color); // 메시지 표시 및 3초 후 이동
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: microbeColor == color
-                            ? Colors.black
-                            : Colors.transparent,
-                        width: 2,
-                      ),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: microbeColor == color
+                          ? Colors.black
+                          : Colors.transparent,
+                      width: 2,
                     ),
                   ),
-                );
-              }).toList(),
-            );
-  }
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+
   void _showConfirmationMessage(BuildContext context, Color color) {
     showDialog(
       context: context,
@@ -138,77 +161,73 @@ class _MicrobeInfoState extends State<MicrobeInfo> {
     });
   }
 
+  // 텍스트 위젯
+  Widget _buildText(
+      String text, String fontfamily, double fontsize, Color color) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: fontfamily,
+        fontSize: fontsize,
+        color: color,
+      ),
+    );
+  }
+
   Column _buildMicrobeLife() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(21.0),
+          decoration: BoxDecoration(
+            color: Color(0xFFF8F8F8),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "미생물 입양 날짜",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildText("이름", "LineKrRg", 14, Color(0xFF333333)),
+                  Row(
+                    children: [
+                      _buildText(
+                          _microbeName, "LineKrRg", 16, Color(0xFF333333)),
+                      SizedBox(width: 8),
+                      Image.asset(
+                        'images/icon_modify.png', // 아이콘 이미지 경로
+                        width: 15, // 아이콘 크기
+                        height: 15,
+                        //color: Colors.grey[600], // 색상 조정 (필요에 따라 제거 가능)
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _microbeDate,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          _dDay,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "미생물 평균 수명",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          _averageLifespan,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      "전용 캡슐로 꼼꼼히 관리해주면 수명이 늘어나요!",
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
-                  ],
-                ),
+              SizedBox(height: 22),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildText("입양 날짜", "LineKrRg", 14, Color(0xFF333333)),
+                  _buildText(_microbeDate, "LineKrRg", 16, Color(0xFF333333)),
+                ],
+              ),
+              SizedBox(height: 22),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildText("함께한 날", "LineKrRg", 14, Color(0xFF333333)),
+                  _buildText(_dDay, "LineKrRg", 16, Color(0xFF333333)),
+                ],
               ),
             ],
-          );
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildMicrobeCharacter() {
@@ -247,4 +266,3 @@ class _MicrobeInfoState extends State<MicrobeInfo> {
     );
   }
 }
-
