@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:misaeng/bar/top_bar_L2.dart';
 import 'package:misaeng/microbe_tab/edit_record.dart';
@@ -32,13 +33,31 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
         'imgUrl': 'images/foodwaste_image.png'
       },
     ],
-    DateTime(2024, 11, 12): [
+    DateTime(2024, 11, 4): [
       {
-        'time': '03:28',
-        'weight': 0.5,
-        'state': '미생물 분해 완료',
-        'foodCategory': ['해산물 요리', '기타 음식 및 간식'],
+        'time': '07:15',
+        'weight': 1.0,
+        'state': '금지 음식',
+        'foodCategory': ['김치 및 절임류', '과일류'],
         'imgUrl': 'images/foodwaste_image.png'
+      },
+    ],
+    DateTime(2024, 11, 22): [
+      {'state': '자리비움'},
+    ],
+    DateTime(2024, 11, 23): [
+      {'state': '자리비움'},
+    ],
+    DateTime(2024, 11, 24): [
+      {'state': '자리비움'},
+    ],
+    DateTime(2024, 11, 25): [
+      {
+        'time': '15:34',
+        'state': '미생물 분해 완료',
+        'foodCategory': ['김치', '밥', '튀김'],
+        'weight': 4.3,
+        'imgUrl': 'mages/foodwaste_image.png'
       },
     ],
   };
@@ -89,78 +108,215 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: TopBarL2(title: "음식물 투입 기록"),
-      body: Column(
-        children: [
-          _buildCalendar(),
-          const Divider(),
-          _buildHeader(),
-          _buildRecordList(recordsToShow),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20), // 수평으로 20만큼의 패딩 추가
+        child: Column(
+          children: [
+            SizedBox(height: 15),
+            _buildCalendar(),
+            SizedBox(height: 20),
+            _buildHeader(),
+            Divider(
+              color: Color.fromARGB(32, 51, 51, 51),
+              thickness: 1.0, // 선 두께
+            ),
+            SizedBox(height: 6),
+            _buildRecordList(recordsToShow),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildCalendar() {
     return Center(
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.95,
-        child: TableCalendar(
-          firstDay: DateTime(2022),
-          lastDay: DateTime(2025),
-          focusedDay: _focusedDate,
-          selectedDayPredicate: (day) => isSameDay(_selectedDate, day),
-          onDaySelected: _onDaySelected,
-          onPageChanged: _onMonthChanged,
-          locale: 'ko_KR',
-          rowHeight: 52,
-          calendarStyle: CalendarStyle(
-            selectedDecoration: BoxDecoration(
-              color: const Color.fromARGB(255, 187, 187, 187),
-              shape: BoxShape.circle,
-            ),
-            selectedTextStyle: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-            todayDecoration: BoxDecoration(
-              border: Border.all(
-                color: const Color.fromARGB(255, 187, 187, 187),
-                width: 2.0,
-              ),
-              shape: BoxShape.circle,
-            ),
-            todayTextStyle: const TextStyle(
-              color: Colors.black,
-            ),
-          ),
-          headerStyle: const HeaderStyle(
-            formatButtonVisible: false,
-            titleCentered: true,
-            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          calendarBuilders: CalendarBuilders(
-            defaultBuilder: (context, day, focusedDay) {
-              if (_isRestrictedDay(day)) {
-                return Container(
-                  margin: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFFFF0000),
-                      width: 2,
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '${day.day}',
-                    style: const TextStyle(color: Colors.black),
-                  ),
-                );
-              }
-              return null;
-            },
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9, // 가로 크기 조정
+        padding: const EdgeInsets.all(8), // 달력과 테두리 사이의 여백
+        decoration: BoxDecoration(
+          color: Colors.white, // 배경색
+          borderRadius: BorderRadius.circular(12), // 둥근 테두리
+          border: Border.all(
+            color: Color.fromARGB(47, 51, 51, 51), // 테두리 색상
+            width: 1, // 테두리 두께
           ),
         ),
+        child: Column(
+          children: [
+            TableCalendar(
+              firstDay: DateTime(2022),
+              lastDay: DateTime(2025),
+              focusedDay: _focusedDate,
+              selectedDayPredicate: (day) => isSameDay(_selectedDate, day),
+              onDaySelected: _onDaySelected,
+              onPageChanged: _onMonthChanged,
+              locale: 'ko_KR',
+              rowHeight: 38,
+              headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+                titleTextStyle: TextStyle(
+                  fontSize: 18,
+                  fontFamily: "LineKrRg",
+                  color: Color(0xFF333333),
+                ),
+                leftChevronIcon: Icon(
+                  Icons.chevron_left_rounded,
+                  color: Color(0xFF333333),
+                  size: 24,
+                ),
+                rightChevronIcon: Icon(
+                  Icons.chevron_right_rounded,
+                  color: Color(0xFF333333),
+                  size: 24,
+                ),
+                headerPadding: EdgeInsets.only(bottom: 16),
+              ),
+              daysOfWeekStyle: DaysOfWeekStyle(
+                weekdayStyle: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF333333),
+                  fontFamily: "LineKrRg",
+                ),
+                weekendStyle: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF333333),
+                  fontFamily: "LineKrRg",
+                ),
+                decoration: const BoxDecoration(),
+              ),
+              calendarStyle: CalendarStyle(
+                defaultTextStyle: const TextStyle(
+                  fontSize: 14,
+                  fontFamily: "LineKrRg",
+                  color: Color(0xFF333333),
+                ),
+                selectedDecoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 187, 187, 187),
+                  shape: BoxShape.circle,
+                ),
+                selectedTextStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontFamily: "LineKrRg",
+                ),
+                todayDecoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 187, 187, 187),
+                    width: 2.0,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                todayTextStyle: const TextStyle(
+                  color: Color(0xFF333333),
+                  fontSize: 14,
+                  fontFamily: "LineKrRg",
+                ),
+                outsideDaysVisible: false, // 전달/다음 달 날짜 숨김
+              ),
+              calendarBuilders: CalendarBuilders(
+                defaultBuilder: (context, day, focusedDay) {
+                  final recordsForDay = _getRecordsForDate(day);
+                  if (recordsForDay.isNotEmpty) {
+                    final state =
+                        recordsForDay.first['state']; // 해당 날짜의 첫 번째 기록 상태 확인
+                    if (state == '자리비움') {
+                      // 자리비움 상태인 경우 파란색으로 표시
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(89, 0, 123, 255), // 파란색 배경
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${day.day}',
+                            style: const TextStyle(
+                              color: Colors.white, // 흰색 텍스트
+                              fontFamily: "LineKrRg",
+                            ),
+                          ),
+                        ),
+                      );
+                    } else if (state == '금지 음식') {
+                      // 금지 음식 상태인 경우 빨간색으로 표시
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(123, 255, 0, 0), // 빨간색 배경
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${day.day}',
+                            style: const TextStyle(
+                              color: Colors.white, // 흰색 텍스트
+                              fontFamily: "LineKrRg",
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                  return null; // 기본 스타일 반환
+                },
+              ),
+            ),
+            const SizedBox(height: 8), // 달력과 범례 사이의 간격
+            _buildLegend(), // 범례 추가
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegend() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end, // 범례를 중앙에 배치
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // 금지 음식 범례
+          Row(
+            children: [
+              Container(
+                width: 17,
+                height: 17,
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(123, 255, 0, 0),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Text(
+                "금지음식",
+                style: TextStyle(fontSize: 14, color: Color(0xFF333333)),
+              ),
+            ],
+          ),
+          const SizedBox(width: 19), // 범례 간 간격
+          // 자리비움 범례
+          Row(
+            children: [
+              Container(
+                width: 17,
+                height: 17,
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(89, 0, 123, 255),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Text(
+                "자리비움",
+                style: TextStyle(fontSize: 14, color: Color(0xFF333333)),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -168,18 +324,28 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
   Widget _buildHeader() {
     final headerText = _selectedDate == null
         ? '전체 기록'
-        : '${_selectedDate!.year}년 ${_selectedDate!.month.toString().padLeft(2, '0')}월 ${_selectedDate!.day.toString().padLeft(2, '0')}일 기록';
+        : '${_selectedDate!.day}일 ${DateFormat.E('ko_KR').format(_selectedDate!)}요일';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text(
-          headerText,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+        child: RichText(
+          text: TextSpan(
+            children: [
+              // 들여쓰기 공백 추가
+              WidgetSpan(
+                child: SizedBox(width: 8.5), // 8.5px 들여쓰기
+              ),
+              TextSpan(
+                text: headerText,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'LineKrRg',
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -199,6 +365,11 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
   }
 
   Widget _buildRecordItem(Map<String, dynamic> record) {
+    // 예외를 방지하고 state가 자리비움이 아닐 때만 기록을 보여줍니다.
+    if (record['state'] == '자리비움') {
+      return SizedBox.shrink(); // 자리비움인 경우 아무것도 표시하지 않음
+    }
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -212,68 +383,123 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade200,
-              spreadRadius: 2,
-              blurRadius: 5,
-            ),
-          ],
+          color: Colors.white, // 배경색
+          borderRadius: BorderRadius.circular(6), // 둥근 테두리
+          border: Border.all(
+            color: const Color.fromARGB(255, 240, 240, 240), // 테두리 색상
+            width: 1, // 테두리 두께
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(
-                  _getStateIcon(record['state']),
-                  color: _getStateColor(record['state']),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  _getStateMessage(record['state']),
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+            // 예외 방지: null 값을 처리합니다.
+            if (record['time'] != null && record['weight'] != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // 날짜와 시간 표시
+                  Row(
+                    children: [
+                      Text(
+                        "${DateFormat('yyyy. MM. dd').format(_selectedDate ?? _focusedDate)}", // 날짜
+                        style: TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 14, // 날짜 텍스트 크기
+                          fontFamily: "LineEnRg",
+                        ),
+                      ),
+                      const SizedBox(width: 8), // 날짜와 시간 사이의 간격
+                      Text(
+                        record['time'], // 시간
+                        style: TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 12, // 시간 텍스트 크기
+                          fontFamily: "LineEnRg",
+                        ),
+                      ),
+                    ],
                   ),
+                  // 가로선과 무게 표시
+                  Expanded(
+                    child: Container(
+                      margin:
+                          const EdgeInsets.symmetric(horizontal: 12), // 선의 좌우 여백
+                      child: Divider(
+                        color: Color.fromARGB(125, 182, 182, 182), // 선의 색상
+                        thickness: 1, // 선의 두께
+                      ),
+                    ),
+                  ),
+                  // 무게 표시
+                  Row(
+                    children: [
+                      Text(
+                        "${record['weight'].toStringAsFixed(1)} kg",
+                        style: TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 14, // 무게 텍스트 크기 유지
+                          fontFamily: "LineEnRg",
+                        ),
+                      ),
+                      SizedBox(width: 30),
+                    ],
+                  ),
+                ],
+              ),
+
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      _getStateIcon(record['state']),
+                      color: _getStateColor(record['state']),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _getStateMessage(record['state']),
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontFamily: "LineKrRg",
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Image.asset(
+                      'images/icon_arrow_right.png', // 사용자 지정 아이콘 경로
+                      width: 20,
+                      height: 20,
+                    ),
+                  ],
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              "${record['time']} | ${record['weight'].toStringAsFixed(1)} kg",
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 8),
-            RichText(
-              text: TextSpan(
-                text: '투입된 음식물: ',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+
+            if (record['foodCategory'] != null)
+              Row(
                 children: [
-                  TextSpan(
-                    text: record['foodCategory']?.take(2).join(', ') ?? '',
+                  SizedBox(width: 28),
+                  Text(
+                    record['foodCategory']?.take(2).join(', ') ?? '',
                     style: const TextStyle(
-                      color: Colors.red,
+                      color: Color(0xFF333333),
+                      fontSize: 14,
                       fontWeight: FontWeight.normal,
                     ),
                   ),
                 ],
               ),
-            ),
           ],
         ),
       ),
@@ -283,11 +509,11 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
   IconData _getStateIcon(String? state) {
     switch (state) {
       case '금지 음식':
-        return Icons.warning_amber_sharp;
+        return Icons.warning_amber_rounded;
       case '미생물 분해 중':
-        return Icons.loop;
+        return Icons.loop_rounded;
       case '미생물 분해 완료':
-        return Icons.check_circle_outline;
+        return Icons.check_circle_outline_rounded;
       default:
         return Icons.info;
     }
