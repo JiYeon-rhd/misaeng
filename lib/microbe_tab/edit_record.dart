@@ -1,12 +1,14 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:misaeng/bar/top_bar_L2.dart';
+import 'package:misaeng/microbe_tab/foodwaste_record.dart';
 
 class EditRecord extends StatefulWidget {
   final DateTime date;
   final Map<String, dynamic> record;
 
   const EditRecord({super.key, required this.date, required this.record});
+  
 
   @override
   _EditRecordState createState() => _EditRecordState();
@@ -15,6 +17,7 @@ class EditRecord extends StatefulWidget {
 class _EditRecordState extends State<EditRecord> {
   bool _isBlurred = true; // 초기 상태: 블러 처리된 이미지
   late List<String> selectedCategories;
+  bool _isDialogActive = false; // 다이얼로그 활성 상태 확인
 
   final List<String> allCategories = [
     '김치 및 절임류',
@@ -44,48 +47,33 @@ class _EditRecordState extends State<EditRecord> {
   }
 
   void _showInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          contentPadding: const EdgeInsets.all(16.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
+    if (_isDialogActive) return; // 이미 다이얼로그가 활성화되어 있으면 실행하지 않음
+
+    _isDialogActive = true; // 다이얼로그 활성화 상태로 설정
+
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 590, // 팝업 위치
+        left: MediaQuery.of(context).size.width * 0.13, // 화면 좌측 여백
+        right: MediaQuery.of(context).size.width * 0.07, // 화면 우측 여백
+        child: Material(
+          color: Colors.transparent,
+          child: Image.asset(
+            'images/dialog_forbidden.png', // 이미지 경로 (assets 폴더에 있는 이미지)
+            fit: BoxFit.contain, // 이미지 크기 조정 방식
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "금지 음식을 주의하세요!",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-              SizedBox(height: 12),
-              Text(
-                "염분이 높은 음식, 뜨거운 음식, 기름이 많은 비계, 뼈, 껍질, 어패류 껍질 등 금지 음식은 미생물을 죽일 수 있습니다.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                "닫기",
-                style: TextStyle(color: Colors.blue),
-              ),
-            ),
-          ],
-        );
-      },
+        ),
+      ),
     );
+
+    overlay?.insert(overlayEntry);
+
+    // 일정 시간 후 팝업 제거
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+      _isDialogActive = false; // 다이얼로그 상태를 비활성화로 설정
+    });
   }
 
   Widget _buildInfoRow() {
@@ -300,9 +288,20 @@ class _EditRecordState extends State<EditRecord> {
               //SizedBox(height: 10),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    print('선택된 카테고리: $selectedCategories');
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    // 저장 완료 대화창 표시
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false, // 배경 클릭으로 닫히지 않도록 설정
+                      builder: (BuildContext context) =>
+                          _buildSaveConfirmationDialog(context),
+                    );
+
+                    // 1초 대기 후 대화창 닫기 및 뒤로 가기
+                    await Future.delayed(const Duration(seconds: 1), () {
+                      Navigator.of(context).pop(); // 대화창 닫기
+                      Navigator.of(context).pop(); // 이전 화면으로 이동
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF007AFF),
@@ -313,12 +312,70 @@ class _EditRecordState extends State<EditRecord> {
                   ),
                   child: Text(
                     '저장하기',
-                    style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "LineKrBd"),
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontFamily: "LineKrBd"),
                   ),
                 ),
               ),
+              SizedBox(height: 50),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // 저장 완료 대화창 빌드 함수
+  Widget _buildSaveConfirmationDialog(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14), // 테두리 둥글게
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white, // 배경색 흰색
+          borderRadius: BorderRadius.circular(14), // 테두리 둥글게
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // 내용 크기에 맞춰 다이얼로그 크기 조절
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0), // 패딩 설정
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(
+                    Icons.check_circle_rounded,
+                    size: 26,
+                    color: Color(0xFF007AFF), // 아이콘 색상
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    "저장 완료",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "LineKrBd",
+                      color: Color(0xFF333333),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    "선택하신 카테고리가\n성공적으로 저장되었습니다.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "LineKrRg",
+                      color: Color(0xFF333333),
+                      height: 1.5, // 줄 간격
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

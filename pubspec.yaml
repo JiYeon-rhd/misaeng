@@ -131,7 +131,18 @@ flutter:
     - images/icon_foodwaste_record.png
     - images/icon_arrow_right.png
     - images/icon_modify.png
-
+    - images/icon_capsule.png
+    - images/icon_capsule_premium.png
+    - images/icon_capsule_none.png
+    - images/icon_capsule_basic.png
+    - images/icon_capsule_standard.png
+    - images/icon_sub_info.png
+    - images/icon_capsule_info.png
+    - images/icon_arrow_right_blue.png
+    - images/icon_arrow_right_gray.png
+    - images/icon_card.png
+    - images/dialog_capsule.png
+    - images/dialog_forbidden.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

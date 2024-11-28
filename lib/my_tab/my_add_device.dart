@@ -13,16 +13,7 @@ class AddDevice extends StatelessWidget {
         "microbeName": "미생이",
         "microbeImage": "images/microbe_bad_blue.png"
       },
-      {
-        "deviceName": "misaeng mk-2",
-        "microbeName": "좋은미생",
-        "microbeImage": "images/microbe_bad_blue.png"
-      },
-      {
-        "deviceName": "misaeng mk-3",
-        "microbeName": "미니미생",
-        "microbeImage": "images/microbe_bad_blue.png"
-      },
+     
     ];
 
     return Scaffold(
