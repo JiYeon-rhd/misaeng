@@ -35,28 +35,61 @@ class _AutoOpenState extends State<AutoOpen> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(45)),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // 배경색 흰색
+            borderRadius: BorderRadius.circular(14), // 테두리 둥글게
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.check_circle, size: 48, color: Colors.green),
-              const SizedBox(height: 16),
-              const Text(
-                "설정 저장 완료",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.all(20.0), // 여백 설정
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      size: 24,
+                      color: Color(0xFF007AFF), // 아이콘 색상: 파란색
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "저장 완료",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "LineKrBd",
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    Text(
+                      '문 자동 닫힘 시간 : $autoOpenTime 초',
+                      style: const TextStyle(fontSize: 16,fontFamily: "LineKrRg", color: Color(0xFF333333) ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                '문 자동 닫힘 시간 : $autoOpenTime 초',
-                style: const TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("확인"),
+              SizedBox(height: 20),
+              const Divider(
+                  height: 0.5,
+                  color: Color.fromARGB(29, 51, 51, 51)), // Divider 추가
+              SizedBox(
+                width: double.infinity,
+                height: 44, // 버튼 높이›ﬁ
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    "확인",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "LineKrBd",
+                      color: Color(0xFF007AFF),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -86,7 +119,8 @@ class _AutoOpenState extends State<AutoOpen> {
               "상단 문이 열린 후, 다시 닫힐 때까지의 간격을 설정합니다.",
               style: TextStyle(fontFamily: "LineKrRg", fontSize: 13),
             ),
-            const SizedBox(height: 50),
+
+            Spacer(),
             ElevatedButton(
               onPressed: _saveSettings,
               style: ElevatedButton.styleFrom(
@@ -106,6 +140,7 @@ class _AutoOpenState extends State<AutoOpen> {
                 ),
               ),
             ),
+            const SizedBox(height: 138), // 버튼 아래 40픽셀 여백 추가
           ],
         ),
       ),
