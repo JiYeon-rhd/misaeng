@@ -143,6 +143,13 @@ flutter:
     - images/icon_card.png
     - images/dialog_capsule.png
     - images/dialog_forbidden.png
+    - images/icon_home.png
+    - images/image_home.png
+    - images/home_humid.png
+    - images/home_input.png
+    - images/home_state.png
+    - images/home_temperature.png
+    - images/home_description.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
