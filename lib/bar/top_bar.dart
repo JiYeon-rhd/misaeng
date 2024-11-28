@@ -38,8 +38,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Image.asset(
               'images/icon_search.png', // 검색 아이콘 이미지 경로
-              width: 24,
-              height: 24,
+              width: 17,
+              height: 17,
             ),
           ),
         ),
@@ -51,8 +51,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Image.asset(
               'images/icon_alarm.png', // 알림 아이콘 이미지 경로
-              width: 24,
-              height: 24,
+              width: 17,
+              height: 217,
             ),
           ),
         ),
@@ -64,11 +64,12 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Image.asset(
               'images/icon_hamberger_menu.png', // 메뉴 아이콘 이미지 경로
-              width: 24,
-              height: 24,
+              width: 17,
+              height: 17,
             ),
           ),
         ),
+        SizedBox(width: 13),
       ],
     );
   }

@@ -122,6 +122,7 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
             ),
             SizedBox(height: 6),
             _buildRecordList(recordsToShow),
+
           ],
         ),
       ),
@@ -358,16 +359,20 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
         itemCount: recordsToShow.length,
         itemBuilder: (context, index) {
           final record = recordsToShow[index];
-          return _buildRecordItem(record);
+          // 날짜 계산을 위해 선택된 날짜 또는 포커스된 날짜와 비교
+          final recordDate = records.entries
+              .firstWhere((entry) => entry.value.contains(record))
+              .key; // 해당 record의 날짜
+
+          return _buildRecordItem(record, recordDate);
         },
       ),
     );
   }
 
-  Widget _buildRecordItem(Map<String, dynamic> record) {
-    // 예외를 방지하고 state가 자리비움이 아닐 때만 기록을 보여줍니다.
+  Widget _buildRecordItem(Map<String, dynamic> record, DateTime recordDate) {
     if (record['state'] == '자리비움') {
-      return SizedBox.shrink(); // 자리비움인 경우 아무것도 표시하지 않음
+      return SizedBox.shrink();
     }
 
     return GestureDetector(
@@ -376,7 +381,7 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
           context,
           MaterialPageRoute(
             builder: (context) => EditRecord(
-              date: _selectedDate ?? _focusedDate,
+              date: recordDate, // recordDate로 수정
               record: record,
             ),
           ),
@@ -386,71 +391,64 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white, // 배경색
-          borderRadius: BorderRadius.circular(6), // 둥근 테두리
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: const Color.fromARGB(255, 240, 240, 240), // 테두리 색상
-            width: 1, // 테두리 두께
+            color: const Color.fromARGB(255, 240, 240, 240),
+            width: 1,
           ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 예외 방지: null 값을 처리합니다.
-            if (record['time'] != null && record['weight'] != null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // 날짜와 시간 표시
-                  Row(
-                    children: [
-                      Text(
-                        "${DateFormat('yyyy. MM. dd').format(_selectedDate ?? _focusedDate)}", // 날짜
-                        style: TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 14, // 날짜 텍스트 크기
-                          fontFamily: "LineEnRg",
-                        ),
-                      ),
-                      const SizedBox(width: 8), // 날짜와 시간 사이의 간격
-                      Text(
-                        record['time'], // 시간
-                        style: TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 12, // 시간 텍스트 크기
-                          fontFamily: "LineEnRg",
-                        ),
-                      ),
-                    ],
-                  ),
-                  // 가로선과 무게 표시
-                  Expanded(
-                    child: Container(
-                      margin:
-                          const EdgeInsets.symmetric(horizontal: 12), // 선의 좌우 여백
-                      child: Divider(
-                        color: Color.fromARGB(125, 182, 182, 182), // 선의 색상
-                        thickness: 1, // 선의 두께
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "${DateFormat('yyyy. MM. dd').format(recordDate)}", // recordDate로 수정
+                      style: TextStyle(
+                        color: Color(0xFF333333),
+                        fontSize: 14,
+                        fontFamily: "LineEnRg",
                       ),
                     ),
-                  ),
-                  // 무게 표시
-                  Row(
-                    children: [
-                      Text(
-                        "${record['weight'].toStringAsFixed(1)} kg",
-                        style: TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 14, // 무게 텍스트 크기 유지
-                          fontFamily: "LineEnRg",
-                        ),
+                    const SizedBox(width: 8),
+                    Text(
+                      record['time'],
+                      style: TextStyle(
+                        color: Color(0xFF333333),
+                        fontSize: 12,
+                        fontFamily: "LineEnRg",
                       ),
-                      SizedBox(width: 30),
-                    ],
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Divider(
+                      color: Color.fromARGB(125, 182, 182, 182),
+                      thickness: 1,
+                    ),
                   ),
-                ],
-              ),
-
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "${record['weight'].toStringAsFixed(1)} kg",
+                      style: TextStyle(
+                        color: Color(0xFF333333),
+                        fontSize: 14,
+                        fontFamily: "LineEnRg",
+                      ),
+                    ),
+                    SizedBox(width: 30),
+                  ],
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -476,7 +474,7 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
                 Row(
                   children: [
                     Image.asset(
-                      'images/icon_arrow_right.png', // 사용자 지정 아이콘 경로
+                      'images/icon_arrow_right.png',
                       width: 20,
                       height: 20,
                     ),
@@ -485,7 +483,6 @@ class _FoodWasteRecordState extends State<FoodWasteRecord> {
               ],
             ),
             const SizedBox(height: 8),
-
             if (record['foodCategory'] != null)
               Row(
                 children: [
