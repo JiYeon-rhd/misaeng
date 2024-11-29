@@ -46,7 +46,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   motion_tab_bar_v2: ^0.3.0
   flutter_svg: ^2.0.15
-  flutter_dotenv: ^5.2.1
   kakao_flutter_sdk: ^1.9.6
 
 dev_dependencies:
