@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:misaeng/main.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:misaeng/services/backend_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -283,16 +285,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 42,
                     height: 42,
                   ),
-                  SizedBox(width: 7.7),
+                  SizedBox(width: 6),
 
                   // KakaoTalk 버튼 (화면 전환 가능)
-                  GestureDetector(
-                    onTap: () =>
-                        _navigateToNextScreen(context, "KakaoTalk"), // 카카오만 작동
-                    child: Image.asset(
-                      'images/logo_kakao.png', // KakaoTalk 로고 이미지 경로
-                      width: 42, // 버튼 크기
-                      height: 42,
+                  ElevatedButton(
+                    onPressed: () => _loginWithKakao(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent, // 배경색 제거
+                      elevation: 0, // 그림자 제거
+                      padding: EdgeInsets.zero, // 여백 제거
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'images/logo_kakao.png', // KakaoTalk 로고 이미지 경로
+                          width: 42, // 로고 크기
+                          height: 42,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -302,5 +313,46 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  final BackendService _backendService = BackendService();
+
+  // 카카오 로그인 로직
+  Future<void> _loginWithKakao(BuildContext context) async {
+    try {
+      // 1. 카카오톡 설치 여부 확인
+      if (await isKakaoTalkInstalled()) {
+        // 2. 카카오톡으로 로그인
+        await UserApi.instance.loginWithKakaoTalk();
+      } else {
+        // 3. 카카오 계정으로 로그인
+        await UserApi.instance.loginWithKakaoAccount();
+      }
+
+      // 4. Kakao SDK에서 Access Token 추출
+      final token = await TokenManagerProvider.instance.manager.getToken();
+      final accessToken = token?.accessToken;
+
+      if (accessToken != null) {
+        print('Access Token: $accessToken');
+
+        // 5. Access Token을 백엔드로 전송
+        final jwtToken = await _backendService.sendTokenToBackend(accessToken);
+
+        if (jwtToken != null) {
+          print('JWT Token: $jwtToken');
+          print("로그인 완료");
+
+          // 6. 홈 화면으로 이동
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          print('Backend Authentication Failed.');
+        }
+      } else {
+        print('Failed to retrieve Kakao Access Token.');
+      }
+    } catch (e) {
+      print('Login Failed: $e');
+    }
   }
 }
