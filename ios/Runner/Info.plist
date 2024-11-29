@@ -45,5 +45,22 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+  <array>
+      <!-- common -->
+      <string>kakao$(FLUTTER_NATIVE_APP_KEY)</string>
+			
+      <!-- KakaoTalk login -->
+      <string>kakaokompassauth</string>
+      <string>storykompassauth</string>
+
+      <!-- KakaoLink -->
+      <string>kakaolink</string>         
+      <string>kakaotalk-5.9.7</string>
+  </array>
 </dict>
 </plist>
