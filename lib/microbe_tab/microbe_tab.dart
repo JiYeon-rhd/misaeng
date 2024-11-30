@@ -1,103 +1,125 @@
 import 'package:flutter/material.dart';
 import 'package:misaeng/microbe_tab/foodwaste_record.dart';
 import 'package:misaeng/microbe_tab/microbe_info.dart';
+import 'package:misaeng/providers/selected_device_provider.dart';
+import 'package:provider/provider.dart';
 
 class MicrobeTab extends StatefulWidget {
   @override
   State<MicrobeTab> createState() => _MicrobeTabState();
+  
 }
 
 class _MicrobeTabState extends State<MicrobeTab> {
   bool isExpanded = false; // 음식 분해 상태를 펼칠지 여부
-  String microbeName = "미생이"; // 미생물 별명
-  String microbeMessage = "상태가 좋지 않습니다.."; // 미생이 건강 상태
-  String microbeMood = "bad"; // 미생이 상태
-  Color microbeColor = Color(0xFF007AFF);
-  String temperatureStatus = "높음"; // (높음 / 적절 / 낮음 )
-  String humidityStatus = "낮음"; // (높음 / 적절 / 낮음 )
-  String foodProcessorStatus = "현재 음식을 분해 중 입니다."; // 현재 음식물 처리기 모드
-  double humidity = 80.0; // 습도
-  double temperature = 20.0; // 온도
-  String foodWaste = "과다"; //  음식 투여량 (과다 / 적절)
-  String prohibitedFood = "없음"; // 금지 음식 (있음 / 없음)
+
+  //String microbeName = "미생이"; // 미생물 별명
+  //String microbeMessage = "상태가 좋지 않습니다.."; // 미생이 건강 상태
+  //String microbeMood = "bad"; // 미생이 상태
+  //Color microbeColor = Color(0xFF007AFF);
+  //String temperatureStatus = "높음"; // (높음 / 적절 / 낮음 )
+  //String humidityStatus = "낮음"; // (높음 / 적절 / 낮음 )
+  //String foodProcessorStatus = "현재 음식을 분해 중 입니다."; // 현재 음식물 처리기 모드
+  //double humidity = 80.0; // 습도
+  //double temperature = 20.0; // 온도
+  //String foodWaste = "과다"; //  음식 투여량 (과다 / 적절)
+  //String prohibitedFood = "없음"; // 금지 음식 (있음 / 없음)
   String microbeLife = "346"; // 미생물 예측 수명
 
   @override
   Widget build(BuildContext context) {
+  final provider = Provider.of<SelectedDeviceProvider>(context, listen: false);
+  //String temperatureStatus = provider.temperatureState ?? ; // (높음 / 적절 / 낮음 )
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 12),
-            _buildMicrobeName(microbeName),
-            const SizedBox(height: 16),
-            // 미생이 캐릭터와 말풍선
-            _buildMicrobeStatus(),
+      body: Consumer<SelectedDeviceProvider>(
+          builder: (context, selectedDevice, child) {
+        // Consumer를 통해 가져온 값 출력
+        print(
+            "[MicrobeTab] Microbe Name: ${selectedDevice.microbeName ?? 'Unknown'}");
+        print("[HomeTab] Bday: ${selectedDevice.bday ?? 'Unknown'}");
+        print(
+            "[HomeTab] Microbe Color: ${selectedDevice.microbeColorRGB ?? 'Unknown'}");
+        print(
+            "[HomeTab] Microbe Mood: ${selectedDevice.microbeMood ?? 'Unknown'}");
 
-            // const SizedBox(height: 21),
-            // // 음처기 상태 요약
-            // _buildFoodProcessorSummary(),
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 12),
+              _buildMicrobeName(selectedDevice.microbeName ?? "이름 없음"),
+              const SizedBox(height: 16),
+              // 미생이 캐릭터와 말풍선
+              _buildMicrobeStatus(
+                  selectedDevice.microbeColorRGB ?? Colors.grey,
+                  selectedDevice.microbeMood ?? "BAD",
+                  selectedDevice.microbeMessageText ?? "알 수 없는 상태입니다."),
 
-            const SizedBox(height: 26),
-            // 음처기 상태 (온도, 습도, 음식 투여량, 금지 음식)
-            _buildFoodProcessorStatus(foodProcessorStatus),
+              // const SizedBox(height: 21),
+              // // 음처기 상태 요약
+              // _buildFoodProcessorSummary(),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 26),
+              // 음처기 상태 (온도, 습도, 음식 투여량, 금지 음식)
+              _buildFoodProcessorStatus(
+                  selectedDevice.microbeStateText ?? '알 수 없는 상태입니다',
+                  selectedDevice.bday ?? 999),
 
-            // 미생물 예측 수명
-            _buildMicrobeLife(),
+              const SizedBox(height: 24),
 
-            const SizedBox(height: 16),
-            // 버튼: 음식물 투입 기록, 미생물 정보
-            _buildActionButtons(),
-            SizedBox(height: 16),
+              // 미생물 예측 수명
+              _buildMicrobeLife(),
 
-            // 마지막 글자
-            _buildText('"전용 캡슐로 꼼꼼히 관리해주면 수명이 늘어나요!"', "LineKrRg", 12,
-                Color(0xFF333333))
-          ],
-        ),
-      ),
+              const SizedBox(height: 16),
+              // 버튼: 음식물 투입 기록, 미생물 정보
+              _buildActionButtons(),
+              SizedBox(height: 16),
+
+              // 마지막 글자
+              _buildText('"전용 캡슐로 꼼꼼히 관리해주면 수명이 늘어나요!"', "LineKrRg", 12,
+                  Color(0xFF333333))
+            ],
+          ),
+        );
+      }),
     );
   }
 
   Container _buildMicrobeLife() {
     return Container(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-            width: 335,
-            decoration: BoxDecoration(
-              color: Color(0xFFF0F0F0),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        _buildText(
-                            "미생물 예측 수명", "LineKrRg", 14, Color(0xFF333333)),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        _buildText("${microbeLife}일", "LineEnRg", 16,
-                            Color(0xFF333333)),
-                        SizedBox(width: 24),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14),
-                _buildText('전용 캡슐로 꼼꼼히 관리해주면 수명이 늘어나요!', 'LineKrRg', 12,
-                    Color.fromARGB(181, 51, 51, 51))
-              ],
-            ),
-          );
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+      width: 335,
+      decoration: BoxDecoration(
+        color: Color(0xFFF0F0F0),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  _buildText("미생물 예측 수명", "LineKrRg", 14, Color(0xFF333333)),
+                ],
+              ),
+              Row(
+                children: [
+                  _buildText(
+                      "${microbeLife}일", "LineEnRg", 16, Color(0xFF333333)),
+                  SizedBox(width: 24),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 14),
+          _buildText('전용 캡슐로 꼼꼼히 관리해주면 수명이 늘어나요!', 'LineKrRg', 12,
+              Color.fromARGB(181, 51, 51, 51))
+        ],
+      ),
+    );
   }
 
   // 텍스트 위젯
@@ -143,7 +165,8 @@ class _MicrobeTabState extends State<MicrobeTab> {
   }
 
   // 미생이 캐릭터와 말풍선
-  Widget _buildMicrobeStatus() {
+  Widget _buildMicrobeStatus(
+      Color color, String microbeMood, String microbeMessage) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -165,9 +188,9 @@ class _MicrobeTabState extends State<MicrobeTab> {
                 Image.asset('images/microbe_shape.png', // 기본 미생이 이미지
                     width: 156,
                     height: 111,
-                    color: microbeColor),
+                    color: color),
                 Image.asset(
-                  microbeMood == 'bad'
+                  microbeMood == 'BAD'
                       ? 'images/microbe_bad.png'
                       : 'images/microbe_smile.png',
                   width: 156,
@@ -208,19 +231,23 @@ class _MicrobeTabState extends State<MicrobeTab> {
 
   // 미생물 상태 요약
   Widget _buildFoodProcessorSummary() {
-    return Column(
-      children: [
-        // 온도 및 습도 상태
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+    return Consumer<SelectedDeviceProvider>(
+        builder: (context, selectedDevice, child) {
+        return Column(
           children: [
-            _buildStatusColumnWithCircle(
-                "온도", "images/microbe_temperature.png", temperatureStatus),
-            _buildStatusColumnWithCircle(
-                "습도", "images/microbe_humidity.png", humidityStatus),
+            // 온도 및 습도 상태
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                _buildStatusColumnWithCircle(
+                    "온도", "images/microbe_temperature.png", selectedDevice.temperatureState ?? '적절'),
+                _buildStatusColumnWithCircle(
+                    "습도", "images/microbe_humidity.png", selectedDevice.humidityState ?? '부족'),
+              ],
+            ),
           ],
-        ),
-      ],
+        );
+      }
     );
   }
 
@@ -258,73 +285,92 @@ class _MicrobeTabState extends State<MicrobeTab> {
   }
 
   // 음처기 정보 토글
-  Widget _buildFoodProcessorStatus(String foodProcessorStatus) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          isExpanded = !isExpanded;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.only(top: 12, right: 12, left: 12),
-        width: 335,
-        decoration: BoxDecoration(
-          color: Color(0xFFF0F0F0),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    _buildText(
-                        foodProcessorStatus, "LineKrRg", 14, Color(0xFF333333)),
-                  ],
-                ),
-                Row(
-                  children: [
-                    _buildText("D + 1", "LineEnRg", 16, Color(0xFF333333)),
-                    SizedBox(width: 9),
-                    Icon(
-                      isExpanded ? Icons.expand_less : Icons.expand_more,
-                      color: Color(0xFF333333),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 11),
-            if (isExpanded)
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildStatusColumn(
-                        "온도", "${temperature.toStringAsFixed(0)}°C"),
-                    _buildStatusColumn("습도", "${humidity.toStringAsFixed(0)}%"),
-                    _buildStatusColumn("음식 투여량", foodWaste),
-                    _buildStatusColumn("금지 음식", prohibitedFood),
-                  ],
-                ),
+  Widget _buildFoodProcessorStatus(String foodProcessorStatus, int bday) {
+    return Consumer<SelectedDeviceProvider>(
+        builder: (context, selectedDevice, child) {
+      return InkWell(
+        onTap: () {
+          setState(() {
+            isExpanded = !isExpanded;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.only(top: 12, right: 12, left: 12),
+          width: 335,
+          decoration: BoxDecoration(
+            color: Color(0xFFF0F0F0),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      _buildText(foodProcessorStatus, "LineKrRg", 14,
+                          Color(0xFF333333)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      _buildText(
+                          "D + ${bday}", "LineEnRg", 16, Color(0xFF333333)),
+                      SizedBox(width: 9),
+                      Icon(
+                        isExpanded ? Icons.expand_less : Icons.expand_more,
+                        color: Color(0xFF333333),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-          ],
+              SizedBox(height: 11),
+              if (isExpanded)
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildStatusColumn(
+                          "온도", "${(selectedDevice.temperature ?? 0.0).toStringAsFixed(0)}°C"),
+                      _buildStatusColumn(
+                          "습도", "${(selectedDevice.humidity ?? 0.0).toStringAsFixed(0)}%"),
+                      _buildStatusColumn("음식 투여량",
+                          "${(selectedDevice.weight ?? 0.0).toStringAsFixed(0)}kg"),
+                      _buildStatusColumn(
+                          "금지 음식", selectedDevice.forbiddenText ?? '없음'),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   // 음처기 정보 공통 컬럼 생성
   Widget _buildStatusColumn(String label, String status) {
+    final provider = Provider.of<SelectedDeviceProvider>(context, listen: false);
+    String temperatureStatus = provider.temperatureStateText ?? '적절'; // (높음 / 적절 / 낮음 )
+    String humidityStatus = provider.humidityStateText ?? '적절'; // (높음 / 적절 / 낮음 )
+    String foodWeightState = provider.foodWeightStateText ?? '적절'; // (적절 / 과다 )
     Color statusColor = Color(0xFF333333);
-    // 음식 투여량, 금지 음식 상태에 따라 색상 지정
-    if (label == "음식 투여량" || label == "금지 음식") {
+    // 금지 음식 상태에 따라 색상 지정
+    if (label == "금지 음식") {
       if (status == "과다" || status == "있음") {
         statusColor = Color(0xFFE4272A);
       } else {
         statusColor = Color(0xFF333333);
       }
+    }
+     // 음식 투여량
+    if (label == "음식 투여량") {
+      if (foodWeightState == "과다") {
+        statusColor = Color(0xFFE4272A);
+      } else {
+        statusColor = Color(0xFF333333);
+      } 
     }
     // 온도
     if (label == "온도") {
@@ -436,17 +482,12 @@ class _MicrobeTabState extends State<MicrobeTab> {
 
   // 미생물 정보 페이지로 이동하는 함수
   void _navigateToInfoPage() async {
-    final selectedColor = await Navigator.push<Color>(
+    Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MicrobeInfo(initialColor: microbeColor),
+        builder: (context) =>
+            const MicrobeInfo(initialColor: Color(0xFF3333333)),
       ),
     );
-
-    if (selectedColor != null) {
-      setState(() {
-        microbeColor = selectedColor; // 선택된 색상 적용
-      });
-    }
   }
 }
