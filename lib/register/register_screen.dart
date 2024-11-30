@@ -45,7 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // 홈 화면으로 이동
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => MyApp()),
+                MaterialPageRoute(builder: (context) => MainApp()),
               );
             },
           ),

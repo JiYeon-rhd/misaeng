@@ -3,12 +3,29 @@ import 'package:misaeng/my_tab/my_add_device.dart';
 import 'package:misaeng/my_tab/my_leave_setting.dart';
 import 'package:misaeng/my_tab/my_auto_open.dart';
 import 'package:misaeng/my_tab/my_subscription_info.dart';
+import 'package:misaeng/providers/selected_device_provider.dart';
+import 'package:provider/provider.dart';
 
-class MyTab extends StatelessWidget {
+class MyTab extends StatefulWidget {
+  @override
+  _MyTabState createState() => _MyTabState();
+}
+
+class _MyTabState extends State<MyTab> {
+  @override
+  void initState() {
+    super.initState();
+    final selectedDevice =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+    if (selectedDevice.deviceId != null) {
+      selectedDevice.fetchDeviceDetails();
+    }
+  }
+
   final String userName = "김미생";
   final String userEmail = "misaeng12@kakao.com";
-  final String deviceName = "misaeng mk-1";
-  final String microbeName = "미생이";
+  //final String deviceName = "misaeng mk-1";
+  //final String microbeName = "미생이";
   final String subStartDay = "";
   final String subEndDay = "";
   final String mySubState = "베이직";
@@ -18,75 +35,83 @@ class MyTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.white, // 배경색 흰색
-        child: ListView(
-          children: [
-            SizedBox(height: 12),
-            Row(children: [
-              SizedBox(width: 20),
-              Image.asset(
-                'images/icon_user.png',
-                width: 25.98,
-                height: 24.47,
+      body: Consumer<SelectedDeviceProvider>(
+          builder: (context, selectedDevice, child) {
+        // Consumer를 통해 가져온 값 출력
+        print("[MyTab] Device Name: ${selectedDevice.deviceName ?? 'Unknown'}");
+        print(
+            "[MyTab] Microbe Name: ${selectedDevice.microbeName ?? 'Unknown'}");
+
+        return Container(
+          color: Colors.white, // 배경색 흰색
+          child: ListView(
+            children: [
+              SizedBox(height: 12),
+              Row(children: [
+                SizedBox(width: 20),
+                Image.asset(
+                  'images/icon_user.png',
+                  width: 25.98,
+                  height: 24.47,
+                ),
+                SizedBox(width: 8),
+                _buildText("My", Color(0xFF333333), 20, "LineKrBd"),
+              ]),
+              SizedBox(height: 40),
+
+              // 프로필 정보
+              _buildTextTitle("프로필 정보"),
+              SizedBox(height: 12),
+              _buildProfileInfo(),
+              SizedBox(height: 24),
+
+              // 기기 & 미생물
+              _buildTextTitle("기기 & 미생물 정보"),
+              SizedBox(height: 20),
+              _buildDeviceInfo(context),
+              SizedBox(height: 30),
+
+              // 구독 정보
+              _buildTextTitle("구독 정보"),
+              SizedBox(height: 20),
+              _buildSubInfo(context),
+              SizedBox(height: 30),
+
+              // 자리 비움 설정
+              _buildTextTitle("자리 비움 설정"),
+              SizedBox(height: 20),
+              _buildLeaveInfo(context),
+              SizedBox(height: 30),
+
+              // 문 자동 닫힘 시간 설정
+              _buildTextTitle("문 자동 닫힘 시간 설정"),
+              SizedBox(height: 20),
+              _buildAutoOpen(context),
+              SizedBox(height: 30),
+
+              // 점검 방문 | A/S 요청
+              _buildTextTitle("점검 방문 | A/S 요청"),
+              SizedBox(height: 12),
+              _buildServiceInfo(context),
+              SizedBox(height: 20),
+
+              // 점검 방문 아래 텍스트 항목들
+              _buildTextList("배송지 관리"),
+              _buildTextList("내 계좌 관리"),
+              _buildTextList("간편결제 관리"),
+              _buildTextList("제품 사용 설명서"),
+              _buildTextList("자주 묻는 질문"),
+              _buildTextList("고객센터"),
+              _buildTextList("이용 약관"),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12.0, horizontal: 16.0),
+                child: _buildText("로그아웃", Color(0xFFFF0000), 14, "LineKrRg"),
               ),
-              SizedBox(width: 8),
-              _buildText("사용자", Color(0xFF333333), 20, "LineKrBd"),
-            ]),
-            SizedBox(height: 40),
-
-            // 프로필 정보
-            _buildTextTitle("프로필 정보"),
-            SizedBox(height: 12),
-            _buildProfileInfo(),
-            SizedBox(height: 24),
-
-            // 기기 & 미생물
-            _buildTextTitle("기기 & 미생물 정보"),
-            SizedBox(height: 20),
-            _buildDeviceInfo(context),
-            SizedBox(height: 30),
-
-            // 구독 정보
-            _buildTextTitle("구독 정보"),
-            SizedBox(height: 20),
-            _buildSubInfo(context),
-            SizedBox(height: 30),
-
-            // 자리 비움 설정
-            _buildTextTitle("자리 비움 설정"),
-            SizedBox(height: 20),
-            _buildLeaveInfo(context),
-            SizedBox(height: 30),
-
-            // 문 자동 닫힘 시간 설정
-            _buildTextTitle("문 자동 닫힘 시간 설정"),
-            SizedBox(height: 20),
-            _buildAutoOpen(context),
-            SizedBox(height: 30),
-
-            // 점검 방문 | A/S 요청
-            _buildTextTitle("점검 방문 | A/S 요청"),
-            SizedBox(height: 12),
-            _buildServiceInfo(context),
-            SizedBox(height: 20),
-
-            // 점검 방문 아래 텍스트 항목들
-            _buildTextList("배송지 관리"),
-            _buildTextList("내 계좌 관리"),
-            _buildTextList("간편결제 관리"),
-            _buildTextList("제품 사용 설명서"),
-            _buildTextList("자주 묻는 질문"),
-            _buildTextList("고객센터"),
-            _buildTextList("이용 약관"),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-              child: _buildText("로그아웃", Color(0xFFFF0000), 14, "LineKrRg"),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -351,48 +376,54 @@ class MyTab extends StatelessWidget {
   Padding _buildDeviceInfo(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // 미생물 정보 텍스트
-          Container(
-              height: 32,
-              decoration: BoxDecoration(
-                border: Border.all(color: Color(0xFF007AFF)),
-                color: Color.fromARGB(255, 255, 255, 255), // 파란색 배경
-                borderRadius: BorderRadius.circular(22), // 둥근 모서리
+      child: Consumer<SelectedDeviceProvider>(
+          builder: (context, selectedDevice, child) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // 미생물 정보 텍스트
+            Container(
+                height: 32,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Color(0xFF007AFF)),
+                  color: Color.fromARGB(255, 255, 255, 255), // 파란색 배경
+                  borderRadius: BorderRadius.circular(22), // 둥근 모서리
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 19.0), // 내부 패딩
+                alignment: Alignment.center, // 중앙 정렬
+                child: _buildText(
+                    "${selectedDevice.deviceName ?? '기기 없음'} & ${selectedDevice.microbeName ?? '이름 없음'}",
+                    Color(0xFF333333),
+                    14,
+                    "LineKrRg")),
+            SizedBox(width: 11),
+            // + 버튼
+            Container(
+              width: 25,
+              height: 25,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(104, 255, 255, 255),
+                  shape: CircleBorder(), // 원형 버튼
+                  padding: EdgeInsets.zero, // 버튼 크기 조정
+                  elevation: 0, // 그림자 효과
+                ),
+                onPressed: () {
+                  // 새 기기 추가 페이지로 이동
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AddDevice()),
+                  );
+                },
+                child: Icon(Icons.add_circle_outline_rounded,
+                    color: const Color.fromARGB(113, 51, 51, 51),
+                    size: 28), // + 아이콘
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 19.0), // 내부 패딩
-              alignment: Alignment.center, // 중앙 정렬
-              child: _buildText("${deviceName} & ${microbeName}",
-                  Color(0xFF333333), 14, "LineKrRg")),
-          SizedBox(width: 11),
-          // + 버튼
-          Container(
-            width: 25,
-            height: 25,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(104, 255, 255, 255),
-                shape: CircleBorder(), // 원형 버튼
-                padding: EdgeInsets.zero, // 버튼 크기 조정
-                elevation: 0, // 그림자 효과
-              ),
-              onPressed: () {
-                // 새 기기 추가 페이지로 이동
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AddDevice()),
-                );
-              },
-              child: Icon(Icons.add_circle_outline_rounded,
-                  color: const Color.fromARGB(113, 51, 51, 51),
-                  size: 28), // + 아이콘
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
