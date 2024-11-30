@@ -6,12 +6,15 @@ import 'package:misaeng/home_tab/home_tab.dart';
 import 'package:misaeng/icon/custom_icons_icons.dart';
 import 'package:misaeng/microbe_tab/microbe_tab.dart';
 import 'package:misaeng/capsule_tab/capsule_tab.dart';
+import 'package:misaeng/my_tab/my_add_device.dart';
 import 'package:misaeng/my_tab/my_tab.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:misaeng/onboarding/login.dart';
-
+import 'package:misaeng/providers/selected_device_provider.dart';
+import 'package:misaeng/register/register_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진 초기화
@@ -20,17 +23,22 @@ void main() async {
 
   KakaoSdk.init(
     nativeAppKey: dotenv.env['FLUTTER_NATIVE_APP_KEY']!,
-    javaScriptAppKey:
-        dotenv.env['FLUTTER_APP_JAVASCRIPT_KEY']!,
+    javaScriptAppKey: dotenv.env['FLUTTER_APP_JAVASCRIPT_KEY']!,
   );
 
   runApp(
-    MaterialApp(
-      initialRoute: '/',
-      routes: {
-        '/': (context) => LoginScreen(),
-        '/home': (context) => MainApp(),
-      },
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (_) => SelectedDeviceProvider()), // Provider 등록
+      ],
+      child: MaterialApp(
+        initialRoute: '/',
+        routes: {
+          '/': (context) => AddDevice(),
+          '/home': (context) => RegisterScreen(),
+        },
+      ),
     ),
   );
 }
@@ -70,8 +78,8 @@ class MyApp extends StatelessWidget {
           title: 'Misaeng App',
           initialRoute: isLoggedIn ? '/home' : '/',
           routes: {
-            '/': (context) => LoginScreen(),
-            '/home': (context) => MainApp(),
+            '/': (context) => AddDevice(),
+            '/home': (context) => RegisterScreen(),
           },
         );
       },
@@ -153,23 +161,23 @@ class _MainAppState extends State<MainApp> {
           tabs: const [
             GButton(
               icon: CustomIcons.navi_home,
-              text: 'Home',
+              text: '홈',
               textStyle: const TextStyle(
                   fontSize: 14,
-                  fontFamily: "LineEnBd",
+                  fontFamily: "LineKrBd",
                   color: Colors.white), // 글꼴과 크기
             ),
             GButton(
               icon: CustomIcons.navi_microbe,
-              text: 'Microbe',
+              text: '미생물',
               textStyle: const TextStyle(
-                  fontSize: 14, fontFamily: "LineEnBd", color: Colors.white),
+                  fontSize: 14, fontFamily: "LineKrBd", color: Colors.white),
             ),
             GButton(
               icon: CustomIcons.navi_capsule,
-              text: 'Capsule',
+              text: '캡슐',
               textStyle: const TextStyle(
-                  fontSize: 14, fontFamily: "LineEnBd", color: Colors.white),
+                  fontSize: 14, fontFamily: "LineKrBd", color: Colors.white),
             ),
             GButton(
               icon: CustomIcons.navi_my,
