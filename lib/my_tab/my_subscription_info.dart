@@ -4,10 +4,10 @@ import 'package:misaeng/bar/top_bar_L2.dart';
 class MySubscriptionInfo extends StatelessWidget {
   const MySubscriptionInfo({super.key});
 
-  final String subStartDay = "2024.06.07";
-  final String subEndDay = "2025.06.06";
+  final String subStartDay = "";
+  final String subEndDay = "";
   final String mySubState = "베이직";
-  final double subscriptionDate = 352;
+  final double subscriptionDate = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,19 +137,19 @@ class MySubscriptionInfo extends StatelessWidget {
         SizedBox(width: 5),
         Text.rich(
           TextSpan(
-            text: "구독 종료까지 앞으로 ",
+            text: "구독 케어가 비활성화 상태입니다.",
             style: TextStyle(fontSize: 16, fontFamily: "LineKrRg"),
             children: [
+              // TextSpan(
+              //   text: "${subscriptionDate.toInt()}",
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //     fontFamily: "LineKrBd",
+              //     color: Color(0xFF007AFF), // 색상 변경
+              //   ),
+              // ),
               TextSpan(
-                text: "${subscriptionDate.toInt()}",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: "LineKrBd",
-                  color: Color(0xFF007AFF), // 색상 변경
-                ),
-              ),
-              TextSpan(
-                text: "일 남았어요.",
+                text: "",
                 style: TextStyle(fontSize: 16, fontFamily: "LineKrRg"),
               ),
             ],

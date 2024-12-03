@@ -14,18 +14,18 @@ class _CapsuleTabState extends State<CapsuleTab> {
   final List<Map<String, dynamic>> capsules = [
     {
       'capsuleType': 'MULTI',
-      'purchaseDate': '2024.06.07',
-      'remain': 4,
+      'purchaseDate': '2024.10.03',
+      'remain': 3,
     },
     {
       'capsuleType': 'CARBS',
-      'purchaseDate': '2024.11.15',
-      'remain': 7,
+      'purchaseDate': '2024.10.03',
+      'remain': 5,
     },
     {
       'capsuleType': 'PROTEIN',
-      'purchaseDate': '2024.10.21',
-      'remain': 6,
+      'purchaseDate': '2024.10.03',
+      'remain': 2,
     },
   ];
   void reduceRemain(int index) {
@@ -230,19 +230,19 @@ class _CapsuleTabState extends State<CapsuleTab> {
                 padding: EdgeInsets.all(12.0), // 리스트 전체 패딩
                 children: [
                   _buildCapsuleHistoryItem(
-                    date: '24.06.15',
+                    date: '24.12.01',
                     capsuleName: '종합 케어형',
                     iconPath: 'images/icon_capsule_info.png',
                   ),
                   SizedBox(height: 8),
                   _buildCapsuleHistoryItem(
-                    date: '24.06.13',
+                    date: '24.11.30',
                     capsuleName: '종합 케어형',
                     iconPath: 'images/icon_capsule_info.png',
                   ),
                   SizedBox(height: 8),
                   _buildCapsuleHistoryItem(
-                    date: '24.06.11',
+                    date: '24.11.29',
                     capsuleName: '종합 케어형',
                     iconPath: 'images/icon_capsule_info.png',
                   ),

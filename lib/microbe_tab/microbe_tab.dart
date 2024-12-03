@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 class MicrobeTab extends StatefulWidget {
   @override
   State<MicrobeTab> createState() => _MicrobeTabState();
-  
 }
 
 class _MicrobeTabState extends State<MicrobeTab> {
@@ -24,12 +23,24 @@ class _MicrobeTabState extends State<MicrobeTab> {
   //double temperature = 20.0; // 온도
   //String foodWaste = "과다"; //  음식 투여량 (과다 / 적절)
   //String prohibitedFood = "없음"; // 금지 음식 (있음 / 없음)
-  String microbeLife = "346"; // 미생물 예측 수명
+  String microbeLife = "340"; // 미생물 예측 수명
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 탭에 들어올 때 SelectedDeviceProvider의 fetchDeviceState 호출
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<SelectedDeviceProvider>(context, listen: false)
+          .fetchDeviceDetails();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-  final provider = Provider.of<SelectedDeviceProvider>(context, listen: false);
-  //String temperatureStatus = provider.temperatureState ?? ; // (높음 / 적절 / 낮음 )
+    final provider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+    //String temperatureStatus = provider.temperatureState ?? ; // (높음 / 적절 / 낮음 )
     return Scaffold(
       backgroundColor: Colors.white,
       body: Consumer<SelectedDeviceProvider>(
@@ -37,11 +48,11 @@ class _MicrobeTabState extends State<MicrobeTab> {
         // Consumer를 통해 가져온 값 출력
         print(
             "[MicrobeTab] Microbe Name: ${selectedDevice.microbeName ?? 'Unknown'}");
-        print("[HomeTab] Bday: ${selectedDevice.bday ?? 'Unknown'}");
+        print("[MicrobeTab] Bday: ${selectedDevice.bday ?? 'Unknown'}");
         print(
-            "[HomeTab] Microbe Color: ${selectedDevice.microbeColorRGB ?? 'Unknown'}");
+            "[MicrobeTab] Microbe Color: ${selectedDevice.microbeColorRGB ?? 'Unknown'}");
         print(
-            "[HomeTab] Microbe Mood: ${selectedDevice.microbeMood ?? 'Unknown'}");
+            "[MicrobeTab] Microbe Mood: ${selectedDevice.microbeMood ?? 'Unknown'}");
 
         return SingleChildScrollView(
           child: Column(
@@ -233,22 +244,23 @@ class _MicrobeTabState extends State<MicrobeTab> {
   Widget _buildFoodProcessorSummary() {
     return Consumer<SelectedDeviceProvider>(
         builder: (context, selectedDevice, child) {
-        return Column(
-          children: [
-            // 온도 및 습도 상태
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildStatusColumnWithCircle(
-                    "온도", "images/microbe_temperature.png", selectedDevice.temperatureState ?? '적절'),
-                _buildStatusColumnWithCircle(
-                    "습도", "images/microbe_humidity.png", selectedDevice.humidityState ?? '부족'),
-              ],
-            ),
-          ],
-        );
-      }
-    );
+      return Column(
+        children: [
+          // 온도 및 습도 상태
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildStatusColumnWithCircle(
+                  "온도",
+                  "images/microbe_temperature.png",
+                  selectedDevice.temperatureState ?? '적절'),
+              _buildStatusColumnWithCircle("습도", "images/microbe_humidity.png",
+                  selectedDevice.humidityState ?? '부족'),
+            ],
+          ),
+        ],
+      );
+    });
   }
 
   // 미생물 상태 요약 공통 컬럼
@@ -261,7 +273,7 @@ class _MicrobeTabState extends State<MicrobeTab> {
     } else if (status == "높음") {
       statusColor = Color(0xFFFF0000);
     } else {
-      statusColor = Color(0xFF0A42CF);
+      statusColor = Color(0xFFFF0000);
     }
     return Row(
       children: [
@@ -331,10 +343,10 @@ class _MicrobeTabState extends State<MicrobeTab> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildStatusColumn(
-                          "온도", "${(selectedDevice.temperature ?? 0.0).toStringAsFixed(0)}°C"),
-                      _buildStatusColumn(
-                          "습도", "${(selectedDevice.humidity ?? 0.0).toStringAsFixed(0)}%"),
+                      _buildStatusColumn("온도",
+                          "${(selectedDevice.temperature ?? 0.0).toStringAsFixed(0)}°C"),
+                      _buildStatusColumn("습도",
+                          "${(selectedDevice.humidity ?? 0.0).toStringAsFixed(0)}%"),
                       _buildStatusColumn("음식 투여량",
                           "${(selectedDevice.weight ?? 0.0).toStringAsFixed(0)}kg"),
                       _buildStatusColumn(
@@ -351,9 +363,12 @@ class _MicrobeTabState extends State<MicrobeTab> {
 
   // 음처기 정보 공통 컬럼 생성
   Widget _buildStatusColumn(String label, String status) {
-    final provider = Provider.of<SelectedDeviceProvider>(context, listen: false);
-    String temperatureStatus = provider.temperatureStateText ?? '적절'; // (높음 / 적절 / 낮음 )
-    String humidityStatus = provider.humidityStateText ?? '적절'; // (높음 / 적절 / 낮음 )
+    final provider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+    String temperatureStatus =
+        provider.temperatureStateText ?? '적절'; // (높음 / 적절 / 낮음 )
+    String humidityStatus =
+        provider.humidityStateText ?? '적절'; // (높음 / 적절 / 낮음 )
     String foodWeightState = provider.foodWeightStateText ?? '적절'; // (적절 / 과다 )
     Color statusColor = Color(0xFF333333);
     // 금지 음식 상태에 따라 색상 지정
@@ -364,13 +379,13 @@ class _MicrobeTabState extends State<MicrobeTab> {
         statusColor = Color(0xFF333333);
       }
     }
-     // 음식 투여량
+    // 음식 투여량
     if (label == "음식 투여량") {
       if (foodWeightState == "과다") {
         statusColor = Color(0xFFE4272A);
       } else {
         statusColor = Color(0xFF333333);
-      } 
+      }
     }
     // 온도
     if (label == "온도") {
@@ -379,7 +394,7 @@ class _MicrobeTabState extends State<MicrobeTab> {
       } else if (temperatureStatus == "높음") {
         statusColor = Color(0xFFE4272A);
       } else {
-        statusColor = Color(0xFF0A42CF);
+        statusColor = Color(0xFFE4272A);
       }
     }
     // 습도
@@ -389,7 +404,7 @@ class _MicrobeTabState extends State<MicrobeTab> {
       } else if (humidityStatus == "높음") {
         statusColor = Color(0xFFE4272A);
       } else {
-        statusColor = Color(0xFF0A42CF);
+        statusColor = Color(0xFFE4272A);
       }
     }
 
