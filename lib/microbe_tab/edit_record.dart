@@ -1,7 +1,12 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:misaeng/bar/top_bar_L2.dart';
 import 'package:misaeng/microbe_tab/foodwaste_record.dart';
+import 'package:misaeng/providers/selected_device_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class EditRecord extends StatefulWidget {
   final DateTime date;
@@ -26,7 +31,7 @@ class _EditRecordState extends State<EditRecord> {
   ];
 
   final List<String> notForbiddenCategories = [
-    '밥 및 면류',
+    '밥/주식 및 면류',
     '빵 및 곡류',
     '유제품/계란 및 디저트',
     '샐러드 및 과채류',
@@ -61,6 +66,33 @@ class _EditRecordState extends State<EditRecord> {
     }
   }
 
+  String _reverseFoodCategoryMessage(String category) {
+    switch (category) {
+      case '김치 및 절임류':
+        return 'KIMCHI';
+      case '밥/주식 및 면류':
+        return 'RICE';
+      case '볶음/구이 및 조림류':
+        return 'STIR_FRIED';
+      case '튀김 및 전/부침류':
+        return 'FRIED';
+      case '해산물 요리':
+        return 'SEAFOOD';
+      case '샐러드 및 과채류':
+        return 'SALAD';
+      case '빵 및 곡류':
+        return 'BREAD';
+      case '유제품/계란 및 디저트':
+        return 'DAIRY';
+      case '기타 음식 및 간식':
+        return 'OTHER';
+      case '음식이 아닌 항목':
+        return 'NONE_FOOD';
+      default:
+        return '';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -70,10 +102,11 @@ class _EditRecordState extends State<EditRecord> {
         .toList();
 
     print("Selected Categories: $selectedCategories");
-    print("Not Forbidden Categories: $notForbiddenCategories");
+    //print("Not Forbidden Categories: $notForbiddenCategories");
   }
 
   void _toggleCategory(String category) {
+    if (category.isEmpty) return; // 빈 문자열 무시
     setState(() {
       selectedCategories.contains(category)
           ? selectedCategories.remove(category)
@@ -109,6 +142,49 @@ class _EditRecordState extends State<EditRecord> {
       overlayEntry.remove();
       _isDialogActive = false; // 다이얼로그 상태를 비활성화로 설정
     });
+  }
+
+  Future<void> _updateFoodCategory() async {
+    final String backendUrl = dotenv.env['FLUTTER_APP_API_URL']!;
+    final Uri apiUrl = Uri.parse('$backendUrl/api/microbes/update-detail');
+
+    final provider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+    final microbeId = provider.microbeId;
+
+    if (microbeId == null) {
+      print("microbeId가 없습니다.");
+      return;
+    }
+
+    final timestamp = widget.record['timestamp'];
+     final foodCategories = selectedCategories
+      .map((category) => _reverseFoodCategoryMessage(category))
+      .where((category) => category.isNotEmpty) // 빈 문자열 필터링
+      .toSet()
+      .toList();
+
+    try {
+      final response = await http.put(
+        apiUrl,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'microbeId': microbeId,
+          'timestamp': timestamp,
+          'foodCategory': foodCategories,
+        }),
+      );
+      print('카테고리 결과 저장한거 확인: ${foodCategories}');
+
+      if (response.statusCode == 200) {
+        print('카테고리 업데이트 성공');
+      } else {
+        print('카테고리 업데이트 실패: ${response.statusCode}');
+        print('Response: ${utf8.decode(response.bodyBytes)}');
+      }
+    } catch (e) {
+      print('네트워크 오류: $e');
+    }
   }
 
   Widget _buildInfoRow() {
@@ -375,6 +451,7 @@ class _EditRecordState extends State<EditRecord> {
               Center(
                 child: ElevatedButton(
                   onPressed: () async {
+                    await _updateFoodCategory(); 
                     // 저장 완료 대화창 표시
                     showDialog(
                       context: context,

@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:misaeng/bar/top_bar_L2.dart';
-
+import 'package:misaeng/providers/selected_device_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 // 자리 비움 설정 페이지
 class AutoOpen extends StatefulWidget {
   const AutoOpen({super.key});
@@ -10,7 +14,54 @@ class AutoOpen extends StatefulWidget {
 }
 
 class _AutoOpenState extends State<AutoOpen> {
-  int autoOpenTime = 5; // 활성화 대기 시간 기본 값
+  double autoOpenTime = 5.0; // 활성화 대기 시간 기본 값
+
+  Future<void> _updateCapsuleCycle() async {
+    final String backendUrl = dotenv.env['FLUTTER_APP_API_URL']!;
+    final Uri apiUrl = Uri.parse('$backendUrl/api/devices/state/close-wait-time');
+
+    final selectedDeviceProvider = Provider.of<SelectedDeviceProvider>(context, listen: false);
+    final deviceId = selectedDeviceProvider.deviceId;
+
+    try {
+      final response = await http.post(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'deviceId': deviceId,
+          'closeWaitTime': autoOpenTime, // `double`을 `int`로 변환하여 전송
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('문 자동 닫힘 업데이트 성공');
+        selectedDeviceProvider.closeWaitTime = autoOpenTime.toDouble(); // 값 업데이트
+      } else {
+        print('문 자동 닫힘 업데이트 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('네트워크 오류: $e');
+    }
+  }
+
+    @override
+  void initState() {
+    super.initState();
+    final selectedDeviceProvider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+
+    // Device 상태 불러오기
+    selectedDeviceProvider.fetchDeviceState().then((_) {
+      setState(() {
+        // emptyActiveTime 값이 null일 경우 기본값 12로 설정
+        autoOpenTime =
+            (selectedDeviceProvider.closeWaitTime ?? 5).toDouble();
+
+      });
+    });
+  }
 
   // 문 자동 닫힘 +
   void _incrementAutoOpenTime() {
@@ -31,7 +82,8 @@ class _AutoOpenState extends State<AutoOpen> {
   }
 
   // 저장하기 버튼 후 Dialog 창
-  void _saveSettings() {
+  void _saveSettings() async{
+    await _updateCapsuleCycle();
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -65,7 +117,7 @@ class _AutoOpenState extends State<AutoOpen> {
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      '문 자동 닫힘 시간 : $autoOpenTime 초',
+                      '문 자동 닫힘 시간 : ${autoOpenTime.toInt()} 초',
                       style: const TextStyle(fontSize: 16,fontFamily: "LineKrRg", color: Color(0xFF333333) ),
                       textAlign: TextAlign.center,
                     ),
@@ -149,7 +201,7 @@ class _AutoOpenState extends State<AutoOpen> {
 
   Widget _buildTimeSetting({
     required String title,
-    required int time,
+    required double time,
     required VoidCallback onIncrement,
     required VoidCallback onDecrement,
   }) {
@@ -176,7 +228,7 @@ class _AutoOpenState extends State<AutoOpen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '$time',
+                  '${time.toInt()}',
                   style: const TextStyle(
                       fontSize: 20,
                       fontFamily: "LineKrRg",

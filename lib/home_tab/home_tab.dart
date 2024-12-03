@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:ffi';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:misaeng/providers/selected_device_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -17,9 +19,55 @@ class _HomeTabState extends State<HomeTab> {
   String state = '분해중';
   //String temperature = '적절';
   //String humid = '높음';
-  String _selectedMode = '일반'; // 기본 선택 모드
+  //String _selectedMode = '일반'; // 기본 선택 모드
   //bool leaveSetting = flase;
   bool _isDialogActive = false; // 다이얼로그 활성 상태 확인
+
+  // 모드 변경 요청 메서드
+  Future<void> _updateDeviceMode(String deviceMode) async {
+    final String backendUrl = dotenv.env['FLUTTER_APP_API_URL']!;
+    final Uri apiUrl = Uri.parse('$backendUrl/api/devices/state/mode');
+
+    final selectedDeviceProvider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+    final deviceId = selectedDeviceProvider.deviceId;
+
+    // 모드 변환 함수
+    String mapDeviceMode(String mode) {
+      switch (mode) {
+        case '일반':
+          return 'GENERAL';
+        case '제습':
+          return 'DEHUMID';
+        case '절전':
+          return 'SAVING';
+        default:
+          return 'UNKNOWN'; // 기본값 설정
+      }
+    }
+    final mappedMode = mapDeviceMode(deviceMode);
+    try {
+      final response = await http.put(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'deviceId': deviceId,
+          'deviceMode': mappedMode,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('기기 모드 업데이트 성공');
+      } else {
+        print('기기 모드 업데이트 실패: ${response.statusCode}');
+        print('Response Body: ${utf8.decode(response.bodyBytes)}');
+      }
+    } catch (e) {
+      print('네트워크 오류: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +81,7 @@ class _HomeTabState extends State<HomeTab> {
         print("[HomeTab] Microbe Name: ${selectedDevice.bday ?? 'Unknown'}");
         print("[HomeTab] 자리비움: ${selectedDevice.emptyState ?? 'Unknown'}");
         print("[HomeTab] 시리얼넘버: ${selectedDevice.serialNum ?? 'Unknown'}");
+        print("[HomeTab] 기기 모드: ${selectedDevice.deviceModeText ?? 'Unknown'}");
 
         return SingleChildScrollView(
           child: Column(
@@ -94,21 +143,21 @@ class _HomeTabState extends State<HomeTab> {
                             child: _buildModeCard(
                               '일반',
                               '음식물\n쓰레기를\n분해합니다.',
-                              _selectedMode == '일반',
+                              selectedDevice.deviceModeText == '일반',
                             ),
                           ),
                           Expanded(
                             child: _buildModeCard(
                               '제습',
                               '내부의\n과도한 습기를\n밖으로\n배출합니다.',
-                              _selectedMode == '제습',
+                              selectedDevice.deviceModeText == '제습',
                             ),
                           ),
                           Expanded(
                             child: _buildModeCard(
                               '절전',
                               '전력 사용을\n낮추고\n에너지를\n절약합니다.',
-                              _selectedMode == '절전',
+                              selectedDevice.deviceModeText == '절전',
                             ),
                           ),
                         ],
@@ -321,81 +370,85 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   Widget _buildModeCard(String title, String description, bool isSelected) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedMode = title; // 선택된 모드 변경
-        });
-      },
-      child: Container(
-        width: 103, // 고정된 너비
-        height: 153, // 고정된 높이
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Color(0xFFF0F0F0),
-          borderRadius: BorderRadius.circular(12),
-          // border: Border.all(
-          //   color: isSelected ? Colors.blue : Colors.grey,
-          //   width: isSelected ? 2 : 1,
-          // ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 3,
-                    offset: Offset(0, 1),
-                  )
-                ]
-              : [],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: isSelected ? "LineKrBd" : 'LineKrRg',
-                color: Color(0xFF333333),
-              ),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              description,
-              style: const TextStyle(
-                  fontSize: 10,
+    return Consumer<SelectedDeviceProvider>(
+        builder: (context, selectedDevice, child) {
+      return GestureDetector(
+        onTap: () async {
+          setState(() {
+            selectedDevice.deviceModeText = title; // 선택된 모드 변경
+          });
+          await _updateDeviceMode(title);
+        },
+        child: Container(
+          width: 103, // 고정된 너비
+          height: 153, // 고정된 높이
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.white : Color(0xFFF0F0F0),
+            borderRadius: BorderRadius.circular(12),
+            // border: Border.all(
+            //   color: isSelected ? Colors.blue : Colors.grey,
+            //   width: isSelected ? 2 : 1,
+            // ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 3,
+                      offset: Offset(0, 1),
+                    )
+                  ]
+                : [],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: isSelected ? "LineKrBd" : 'LineKrRg',
                   color: Color(0xFF333333),
-                  fontFamily: "LineKrRg"),
-            ),
-            const Spacer(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isSelected
-                        ? Color(0xFF007AFF)
-                        : const Color.fromARGB(126, 158, 158, 158),
-                    width: 1,
-                  ),
-                  color: isSelected ? Color(0xFF007AFF) : Colors.transparent,
                 ),
-                child: isSelected
-                    ? const Icon(
-                        Icons.check_rounded,
-                        size: 14,
-                        color: Colors.white,
-                      )
-                    : null,
               ),
-            ),
-          ],
+              const SizedBox(height: 14),
+              Text(
+                description,
+                style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFF333333),
+                    fontFamily: "LineKrRg"),
+              ),
+              const Spacer(),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected
+                          ? Color(0xFF007AFF)
+                          : const Color.fromARGB(126, 158, 158, 158),
+                      width: 1,
+                    ),
+                    color: isSelected ? Color(0xFF007AFF) : Colors.transparent,
+                  ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        )
+                      : null,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

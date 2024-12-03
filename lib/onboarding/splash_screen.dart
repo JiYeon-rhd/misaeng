@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:misaeng/my_tab/my_add_device.dart';
 import 'package:misaeng/onboarding/login.dart'; // 로그인 화면 import
 
 class SplashScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class SplashScreenState extends State<SplashScreen> {
     await Future.delayed(Duration(seconds: 3), () {});
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen()), // 로그인 화면으로 이동
+      MaterialPageRoute(builder: (context) => AddDevice()), // 로그인 화면으로 이동
     );
   }
 

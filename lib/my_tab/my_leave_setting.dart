@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:misaeng/bar/top_bar_L2.dart';
+import 'package:misaeng/providers/selected_device_provider.dart';
+import 'package:provider/provider.dart';
 
 // 자리 비움 설정 페이지
 class LeaveSetting extends StatefulWidget {
@@ -10,8 +15,90 @@ class LeaveSetting extends StatefulWidget {
 }
 
 class _LeaveSettingState extends State<LeaveSetting> {
-  int activationTime = 12; // 활성화 대기 시간 기본 값
-  int capsuleTourTime = 6; // 캡슐 투어 시간 기본 값
+  double activationTime = 12.0; // 활성화 대기 시간 기본 값
+  double capsuleTourTime = 6.0; // 캡슐 투어 시간 기본 값
+
+  Future<void> _updateCapsuleCycle() async {
+    final String backendUrl = dotenv.env['FLUTTER_APP_API_URL']!;
+    final Uri apiUrl = Uri.parse('$backendUrl/api/devices/state/capsule-cycle');
+
+    final selectedDeviceProvider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+    final deviceId = selectedDeviceProvider.deviceId;
+
+    try {
+      final response = await http.post(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'deviceId': deviceId,
+          'capsuleCycle': capsuleTourTime.toInt(), // `double`을 `int`로 변환하여 전송
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('캡슐 투여 주기 업데이트 성공');
+        selectedDeviceProvider.capsuleCycle =
+            capsuleTourTime.toDouble(); // 값 업데이트
+      } else {
+        print('캡슐 투여 주기 업데이트 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('네트워크 오류: $e');
+    }
+  }
+
+  Future<void> _updateActivationTime() async {
+    final String backendUrl = dotenv.env['FLUTTER_APP_API_URL']!;
+    final Uri apiUrl =
+        Uri.parse('$backendUrl/api/devices/state/empty-active-time');
+
+    final selectedDeviceProvider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+    final deviceId = selectedDeviceProvider.deviceId;
+
+    try {
+      final response = await http.post(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'deviceId': deviceId,
+          'emptyActiveTime': activationTime,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('활성화 대기 시간 업데이트 성공');
+        // 업데이트된 값을 SelectedDeviceProvider에 반영
+        selectedDeviceProvider.emptyActiveTime = activationTime.toDouble();
+      } else {
+        print('활성화 대기 시간 업데이트 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('네트워크 오류: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final selectedDeviceProvider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
+
+    // Device 상태 불러오기
+    selectedDeviceProvider.fetchDeviceState().then((_) {
+      setState(() {
+        // emptyActiveTime 값이 null일 경우 기본값 12로 설정
+        activationTime =
+            (selectedDeviceProvider.emptyActiveTime ?? 12).toDouble();
+        capsuleTourTime = (selectedDeviceProvider.capsuleCycle ?? 6).toDouble();
+      });
+    });
+  }
 
   // 활성화 대기 시간 +
   void _incrementActivationTime() {
@@ -50,16 +137,20 @@ class _LeaveSettingState extends State<LeaveSetting> {
   }
 
   // 저장하기 버튼 후 Dialog 창
-  void _saveSettings() {
+  void _saveSettings() async {
+    // 먼저 서버에 요청 전송
+    await _updateActivationTime();
+    await _updateCapsuleCycle(); // 캡슐 투어 시간 업데이트
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(45)),
         child: Container(
           decoration: BoxDecoration(
-          color: Colors.white, // 배경색 흰색
-          borderRadius: BorderRadius.circular(14), // 테두리 둥글게
-        ),
+            color: Colors.white, // 배경색 흰색
+            borderRadius: BorderRadius.circular(14), // 테두리 둥글게
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -84,7 +175,7 @@ class _LeaveSettingState extends State<LeaveSetting> {
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      '활성화 대기 시간: $activationTime 시간\n캡슐 투어 시간: $capsuleTourTime 시간',
+                      '활성화 대기 시간: ${activationTime.toInt()} 시간\n캡슐 투여 시간: ${capsuleTourTime.toInt()} 시간',
                       style: const TextStyle(
                         fontSize: 14,
                         fontFamily: "LineKrRg",
@@ -97,7 +188,9 @@ class _LeaveSettingState extends State<LeaveSetting> {
                 ),
               ),
               SizedBox(height: 20),
-              const Divider(height: 0.5, color: Color.fromARGB(29, 51, 51, 51)), // Divider 추가
+              const Divider(
+                  height: 0.5,
+                  color: Color.fromARGB(29, 51, 51, 51)), // Divider 추가
               SizedBox(
                 width: double.infinity,
                 height: 44, // 버튼 높이›ﬁ
@@ -107,8 +200,8 @@ class _LeaveSettingState extends State<LeaveSetting> {
                     "확인",
                     style: TextStyle(
                       fontSize: 16,
-                        fontFamily: "LineKrBd",
-                        color: Color(0xFF007AFF),
+                      fontFamily: "LineKrBd",
+                      color: Color(0xFF007AFF),
                     ),
                   ),
                 ),
@@ -143,7 +236,7 @@ class _LeaveSettingState extends State<LeaveSetting> {
             ),
             const SizedBox(height: 35),
             _buildTimeSetting(
-              title: "캡슐 투어 시간",
+              title: "캡슐 투여 시간",
               time: capsuleTourTime,
               onIncrement: _incrementCapsuleTourTime,
               onDecrement: _decrementCapsuleTourTime,
@@ -182,7 +275,7 @@ class _LeaveSettingState extends State<LeaveSetting> {
 
   Widget _buildTimeSetting({
     required String title,
-    required int time,
+    required double time,
     required VoidCallback onIncrement,
     required VoidCallback onDecrement,
   }) {
@@ -209,7 +302,7 @@ class _LeaveSettingState extends State<LeaveSetting> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '$time',
+                  '${time.toInt()}',
                   style: const TextStyle(
                       fontSize: 20,
                       fontFamily: "LineKrRg",

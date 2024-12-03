@@ -289,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // KakaoTalk 버튼 (화면 전환 가능)
                   ElevatedButton(
-                    onPressed: () => MainApp(),
+                    onPressed: () => _loginWithKakao(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent, // 배경색 제거
                       elevation: 0, // 그림자 제거

@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:misaeng/providers/selected_device_provider.dart';
+import 'package:provider/provider.dart';
 
 class CapsuleTab extends StatefulWidget {
   CapsuleTab({super.key});
@@ -9,35 +14,218 @@ class CapsuleTab extends StatefulWidget {
 
 class _CapsuleTabState extends State<CapsuleTab> {
   bool _isDialogActive = false; // 다이얼로그 활성 상태 확인
+  @override
+  void initState() {
+    super.initState();
+    // Provider를 통해 fetchCapsuleDetails 호출
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<SelectedDeviceProvider>(context, listen: false)
+          .fetchCapsuleDetails();
+    });
+  }
 
   // 샘플 데이터: 저장된 캡슐 목록
   final List<Map<String, dynamic>> capsules = [
     {
       'capsuleType': 'MULTI',
       'purchaseDate': '2024.10.03',
-      'remain': 3,
+      'remain': 10,
     },
     {
       'capsuleType': 'CARBS',
       'purchaseDate': '2024.10.03',
-      'remain': 5,
+      'remain': 10,
     },
     {
       'capsuleType': 'PROTEIN',
       'purchaseDate': '2024.10.03',
-      'remain': 2,
+      'remain': 10,
     },
   ];
-  void reduceRemain(int index) {
-    setState(() {
-      if (capsules[index]['remain'] > 0) {
-        capsules[index]['remain']--;
-      }
-    });
+
+// 캡슐 수량 감소 로직
+  void reduceRemain(SelectedDeviceProvider deviceProvider, BuildContext context,
+      String capsuleType) {
+    final currentRemain = deviceProvider.capsuleRemainMap[capsuleType];
+
+    if (currentRemain == null) {
+      print("캡슐 수량 정보를 가져올 수 없습니다.");
+      return;
+    }
+
+    if (currentRemain > 0) {
+      // 수량이 1 이상이면 -1 감소하고 완료 다이얼로그 표시
+      setState(() {
+        deviceProvider.capsuleRemainMap[capsuleType] = currentRemain - 1;
+      });
+      _showCompleteDialog(context);
+    } else {
+      // 수량이 0이면 구매 다이얼로그 표시, 수량 감소하지 않음
+      _showEmptyDialog(context);
+    }
+  }
+
+  void _showCompleteDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(16)), // 상단 테두리 둥글게
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white, // 배경 흰색
+            borderRadius:
+                BorderRadius.vertical(top: Radius.circular(16)), // 상단 둥글게
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // 내용 크기에 따라 높이 조절
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0), // 패딩 설정
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      size: 24,
+                      color: Color(0xFF007AFF), // 아이콘 색상
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "캡슐 투여 완료",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "LineKrBd",
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    const Text(
+                      "캡슐 투여가 정상적으로 완료되었습니다.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: "LineKrRg",
+                        color: Color(0xFF333333),
+                        height: 1.5, // 줄 간격
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 15),
+              const Divider(
+                  height: 0.5,
+                  color: Color.fromARGB(29, 51, 51, 51)), // Divider 추가
+              SizedBox(
+                width: double.infinity,
+                height: 44, // 버튼 높이
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(), // 모달 닫기
+                  child: const Text(
+                    "확인",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "LineKrBd",
+                      color: Color(0xFF007AFF),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 40),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEmptyDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(16)), // 상단 테두리 둥글게
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white, // 배경 흰색
+            borderRadius:
+                BorderRadius.vertical(top: Radius.circular(16)), // 상단 둥글게
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // 내용 크기에 따라 높이 조절
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0), // 패딩 설정
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.warning_rounded,
+                      size: 24,
+                      color: Color(0xFFFF3B30), // 경고 아이콘 색상
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "캡슐이 모두 소진되었습니다",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "LineKrBd",
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    const Text(
+                      "새로운 캡슐을 구매해주세요.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: "LineKrRg",
+                        color: Color(0xFF333333),
+                        height: 1.5, // 줄 간격
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Divider(
+                  height: 0.5,
+                  color: Color.fromARGB(29, 51, 51, 51)), // Divider 추가
+              SizedBox(
+                width: double.infinity,
+                height: 44, // 버튼 높이
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(), // 모달 닫기
+                  child: const Text(
+                    "확인",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "LineKrBd",
+                      color: Color(0xFF007AFF),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final deviceProvider = Provider.of<SelectedDeviceProvider>(context);
+    // 캡슐 타입과 남은 수량 출력
+    print("캡슐 타입: ${deviceProvider.capsuleType}");
+    print("남은 수량: ${deviceProvider.remain}");
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -49,7 +237,7 @@ class _CapsuleTabState extends State<CapsuleTab> {
               // 캡슐 헤더와 구독 케어 비활성화
               _buildSubInfo(context),
               // 캡슐 카드
-              _buildCapsuleCard(),
+              _buildCapsuleCard(deviceProvider),
               // 캡슐 관리 구매 버튼 + 최근 투여 일자
               _build_ManageCapsule(),
             ],
@@ -133,7 +321,23 @@ class _CapsuleTabState extends State<CapsuleTab> {
   }
 
 // 캡슐 카드 (애니메이션 설정) -> CapsuleCard 클래스로 관리
-  Container _buildCapsuleCard() {
+  Container _buildCapsuleCard(SelectedDeviceProvider deviceProvider) {
+    final capsuleRemainMap = deviceProvider.capsuleRemainMap;
+    print("if문 전: ${deviceProvider}");
+
+    print("if문 전: ${capsuleRemainMap}");
+
+    // 데이터가 비어 있는 경우 처리
+    if (capsuleRemainMap.isEmpty) {
+      return Container(
+        child: Text(
+          '캡슐 데이터를 불러오는 중입니다.',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+
+    final capsuleList = capsuleRemainMap.entries.toList();
     return Container(
       height: 300,
       child: CarouselSlider.builder(
@@ -144,13 +348,24 @@ class _CapsuleTabState extends State<CapsuleTab> {
           enableInfiniteScroll: false, // 무한 스크롤 여부
           autoPlay: false, // 자동 재생 여부
         ),
-        itemCount: capsules.length,
+        itemCount: capsuleList.length,
         itemBuilder: (context, index, realIndex) {
+          if (index >= capsuleList.length) {
+            return Container(); // 유효하지 않은 인덱스 처리
+          }
+
+          // 현재 아이템 가져오기
+          final capsuleType = capsuleList[index].key; // 캡슐 타입
+          final remain = capsuleList[index].value; // 남은 수량
+
           return CapsuleCard(
-            capsuleType: capsules[index]['capsuleType'],
+            capsuleType: capsuleType,
             purchaseDate: capsules[index]['purchaseDate'],
-            remain: capsules[index]['remain'],
-            onReduceRemain: () => reduceRemain(index),
+            remain: remain.toDouble(),
+            onReduceRemain: () =>
+                reduceRemain(deviceProvider, context, capsuleType),
+            serialNum: deviceProvider.serialNum ?? '',
+            capsuleRemainMap: deviceProvider.capsuleRemainMap,
           );
         },
       ),
@@ -219,34 +434,72 @@ class _CapsuleTabState extends State<CapsuleTab> {
             ],
           ),
           SizedBox(height: 13),
-
           ClipRRect(
             borderRadius: BorderRadius.circular(12), // 모서리 둥글게
             child: Container(
               color: Color(0xFFF4F4F4), // 전체 배경색
-              child: ListView(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.all(12.0), // 리스트 전체 패딩
-                children: [
-                  _buildCapsuleHistoryItem(
-                    date: '24.12.01',
-                    capsuleName: '종합 케어형',
-                    iconPath: 'images/icon_capsule_info.png',
-                  ),
-                  SizedBox(height: 8),
-                  _buildCapsuleHistoryItem(
-                    date: '24.11.30',
-                    capsuleName: '종합 케어형',
-                    iconPath: 'images/icon_capsule_info.png',
-                  ),
-                  SizedBox(height: 8),
-                  _buildCapsuleHistoryItem(
-                    date: '24.11.29',
-                    capsuleName: '종합 케어형',
-                    iconPath: 'images/icon_capsule_info.png',
-                  ),
-                ],
+              child: Consumer<SelectedDeviceProvider>(
+                builder: (context, provider, child) {
+                  final recentThreeHistory = provider.recentThreeHistory;
+
+                  // 최근 투여 기록이 없을 때
+                  if (recentThreeHistory.isEmpty) {
+                    return Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Center(
+                        child: Text(
+                          "최근 투여 기록이 없습니다.",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "LineKrRg",
+                            color: Color(0xFF333333),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  // 최근 투여 기록이 있을 때
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.all(12.0), // 리스트 전체 패딩
+                    itemCount: recentThreeHistory.length,
+                    itemBuilder: (context, index) {
+                      final item = recentThreeHistory[index];
+                      String capsuleName;
+
+                      // 캡슐 타입에 따른 이름 매칭
+                      switch (item['capsuleType']) {
+                        case 'PROTEIN':
+                          capsuleName = '단백질 캡슐';
+                          break;
+                        case 'MULTI':
+                          capsuleName = '종합 케어형';
+                          break;
+                        case 'CARBS':
+                          capsuleName = '탄수화물 캡슐';
+                          break;
+                        default:
+                          capsuleName = '알 수 없는 캡슐';
+                      }
+
+                      return Column(
+                        children: [
+                          _buildCapsuleHistoryItem(
+                            date: item['date']?.substring(2) ??
+                                '날짜 없음', // 'YYYY-MM-DD'에서 'YY-MM-DD'로 변환
+                            capsuleName: capsuleName,
+                            iconPath:
+                                'images/icon_capsule_info.png', // 공통 아이콘 경로
+                          ),
+                          if (index < recentThreeHistory.length - 1)
+                            SizedBox(height: 8), // 아이템 간 간격
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ),
@@ -306,7 +559,7 @@ class _CapsuleTabState extends State<CapsuleTab> {
     );
   }
 
-// 구독 서비스 설명 대화창 
+// 구독 서비스 설명 대화창
   void _showInfoDialog(BuildContext context) {
     if (_isDialogActive) return; // 이미 다이얼로그가 활성화되어 있으면 실행하지 않음
 
@@ -355,14 +608,19 @@ class _CapsuleTabState extends State<CapsuleTab> {
 class CapsuleCard extends StatefulWidget {
   final String capsuleType; // 캡슐 타입
   final String purchaseDate;
-  final int remain; // 변경된 remain
+  final double remain; // 변경된 remain
   final VoidCallback onReduceRemain;
+
+  final String serialNum; // Device의 serialNum
+  final Map<String, int> capsuleRemainMap; // 모든 캡슐의 남은 수량
 
   const CapsuleCard({
     required this.capsuleType,
     required this.purchaseDate,
     required this.remain,
     required this.onReduceRemain,
+    required this.serialNum,
+    required this.capsuleRemainMap,
     super.key,
   });
   _CapsuleCardState createState() => _CapsuleCardState();
@@ -370,6 +628,44 @@ class CapsuleCard extends StatefulWidget {
 
 // 캡슐 카드 타입별 설정
 class _CapsuleCardState extends State<CapsuleCard> {
+  Future<void> sendPostRequest(String capsuleType) async {
+    final String backendUrl =
+        dotenv.env['FLUTTER_APP_API_URL']!; // Replace with your backend URL
+    final Uri apiUrl = Uri.parse('$backendUrl/api/capsules');
+
+    // 캡슐 데이터 구성
+    final capsuleList = [
+      {
+        "capsuleType": capsuleType, // 클릭된 캡슐 타입
+        "capsuleCnt": 1, // 감소량은 항상 1로 고정
+        "useType": true, // 고정 값
+      }
+    ];
+    // POST 데이터
+    final postData = {
+      "serialNum": widget.serialNum,
+      "capsuleList": capsuleList,
+    };
+
+    try {
+      final response = await http.post(
+        apiUrl,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(postData),
+      );
+
+      if (response.statusCode == 200) {
+        print("POST 요청 성공: ${response.body}");
+      } else {
+        print("POST 요청 실패: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      print("POST 요청 중 오류 발생: $e");
+    }
+  }
+
   // 캡슐 타입에 따라 색상 및 이미지 경로 설정
   Color getColor(String capsuleType) {
     switch (capsuleType) {
@@ -437,7 +733,7 @@ class _CapsuleCardState extends State<CapsuleCard> {
                         color: Colors.white),
                   ),
                   Text(
-                    '구매 일자: ${widget.purchaseDate}', // 구매 일자
+                    '구매 일자: 2024.10.03', // 구매 일자
                     style: TextStyle(
                         color: Colors.white,
                         fontFamily: "LineKrRg",
@@ -489,7 +785,7 @@ class _CapsuleCardState extends State<CapsuleCard> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
-                              '${widget.remain}', // 변경된 remain 사용
+                              '${widget.remain.toStringAsFixed(0)}', // 변경된 remain 사용
                               style: TextStyle(
                                   fontSize: 45,
                                   fontFamily: "LineKrRg",
@@ -516,10 +812,14 @@ class _CapsuleCardState extends State<CapsuleCard> {
           right: 82,
           child: ElevatedButton.icon(
             onPressed: () {
-              // 값 줄어들기
-              widget.onReduceRemain();
-              //다이얼로그 표시
-              _showCompleteDialog(context);
+              if (widget.remain > 0) {
+                // 수량이 0보다 클 때만 POST 요청
+                widget.onReduceRemain();
+                sendPostRequest(widget.capsuleType);
+              }
+              else{
+                _showEmptyDialog(context);
+              }
             },
             icon: Image.asset(
               'images/icon_capsule_info.png', // 이미지 경로
@@ -550,77 +850,82 @@ class _CapsuleCardState extends State<CapsuleCard> {
       ],
     );
   }
-void _showCompleteDialog(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)), // 상단 테두리 둥글게
-    ),
-    builder: (BuildContext context) {
-      return Container(
-        decoration: const BoxDecoration(
-          color: Colors.white, // 배경 흰색
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)), // 상단 둥글게
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // 내용 크기에 따라 높이 조절
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0), // 패딩 설정
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.check_circle_rounded,
-                    size: 24,
-                    color: Color(0xFF007AFF), // 아이콘 색상
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "캡슐 투여 완료",
+
+
+  void _showEmptyDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(16)), // 상단 테두리 둥글게
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white, // 배경 흰색
+            borderRadius:
+                BorderRadius.vertical(top: Radius.circular(16)), // 상단 둥글게
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // 내용 크기에 따라 높이 조절
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0), // 패딩 설정
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.warning_rounded,
+                      size: 24,
+                      color: Color(0xFFFF3B30), // 경고 아이콘 색상
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "캡슐이 모두 소진되었습니다",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "LineKrBd",
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    const Text(
+                      "새로운 캡슐을 구매해주세요.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: "LineKrRg",
+                        color: Color(0xFF333333),
+                        height: 1.5, // 줄 간격
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Divider(
+                  height: 0.5,
+                  color: Color.fromARGB(29, 51, 51, 51)), // Divider 추가
+              SizedBox(
+                width: double.infinity,
+                height: 44, // 버튼 높이
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(), // 모달 닫기
+                  child: const Text(
+                    "확인",
                     style: TextStyle(
                       fontSize: 16,
                       fontFamily: "LineKrBd",
-                      color: Color(0xFF333333),
+                      color: Color(0xFF007AFF),
                     ),
-                  ),
-                  const SizedBox(height: 26),
-                  const Text(
-                    "캡슐 투여가 정상적으로 완료되었습니다.",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: "LineKrRg",
-                      color: Color(0xFF333333),
-                      height: 1.5, // 줄 간격
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 15),
-            const Divider(height: 0.5, color: Color.fromARGB(29, 51, 51, 51)), // Divider 추가
-            SizedBox(
-              width: double.infinity,
-              height: 44, // 버튼 높이
-              child: TextButton(
-                onPressed: () => Navigator.of(context).pop(), // 모달 닫기
-                child: const Text(
-                  "확인",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: "LineKrBd",
-                    color: Color(0xFF007AFF),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 40),
-          ],
-        ),
-      );
-    },
-  );
-}
-
+              const SizedBox(height: 40),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

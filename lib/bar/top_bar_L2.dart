@@ -9,6 +9,7 @@ class TopBarL2 extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      scrolledUnderElevation: 0,
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       elevation: 0,
       title: Row(

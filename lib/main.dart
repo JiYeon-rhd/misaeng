@@ -42,7 +42,7 @@ void main() async {
       // ),
       child: MaterialApp(
           //title: 'Misaeng App',
-          home: AddDevice(), // 첫 화면을 SplashScreen으로 설정
+          home: SplashScreen(), // 첫 화면을 SplashScreen으로 설정
         ),
     ),
   );
@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
         // );
         return MaterialApp(
           title: 'Misaeng App',
-          home: AddDevice(), // 첫 화면을 SplashScreen으로 설정
+          home: SplashScreen(), // 첫 화면을 SplashScreen으로 설정
         );
       },
     );

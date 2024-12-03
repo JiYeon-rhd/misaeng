@@ -88,7 +88,9 @@ class _MicrobeTabState extends State<MicrobeTab> {
 
               // 마지막 글자
               _buildText('"전용 캡슐로 꼼꼼히 관리해주면 수명이 늘어나요!"', "LineKrRg", 12,
-                  Color(0xFF333333))
+                  Color(0xFF333333)),
+
+              const SizedBox(height: 50),
             ],
           ),
         );

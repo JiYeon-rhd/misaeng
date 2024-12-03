@@ -53,10 +53,18 @@ class SelectedDeviceProvider with ChangeNotifier {
 
   // 데이터를 변수에 할당
   String? deviceMode;
+  String? deviceModeText;
   bool? emptyState;
   double? emptyActiveTime;
   double? capsuleCycle;
   double? closeWaitTime;
+
+  String? capsuleType;
+  double? remain;
+  String? date;
+  // capsuleRemainMap 추가
+  Map<String, int> capsuleRemainMap = {};
+  List<Map<String, String>> recentThreeHistory = [];
 
   // 미생물, 음처기 데이터 가져오는 메서드
   Future<void> fetchDeviceDetails() async {
@@ -157,10 +165,12 @@ class SelectedDeviceProvider with ChangeNotifier {
         if (data['data'] != null) {
           // 데이터를 변수에 할당
           deviceMode = data['data']['deviceMode'];
+          deviceModeText = getDeviceMode(deviceMode ?? "GENERAL");
+          print("[디바이스 모드 출럭] : ${deviceModeText}");
           emptyState = data['data']['emptyState'];
-          emptyActiveTime = data['data']['emptyActiveTime'];
+          emptyActiveTime = (data['data']['emptyActiveTime'] as int).toDouble();
           capsuleCycle = data['data']['capsuleCycle'];
-          closeWaitTime = data['data']['closeWaitTime'];
+          closeWaitTime = (data['data']['closeWaitTime']as int).toDouble();
 
           // 이 데이터를 사용할 추가 로직을 구현
           // 예: 상태 업데이트, UI 반영
@@ -173,6 +183,71 @@ class SelectedDeviceProvider with ChangeNotifier {
       }
     } catch (e) {
       print("Error fetching device state: $e");
+    }
+  }
+
+// 캡슐 데이터 가져오는 함수
+  Future<void> fetchCapsuleDetails() async {
+    if (serialNum == null) {
+      print("serialNum이 설정되지 않았습니다.");
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('$backendUrl/api/capsules/$serialNum'), // API 호출 URL
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        print(data);
+
+        // JSON 데이터에서 캡슐 정보 추출
+        if (data['data'] != null && data['data']['capsuleRemain'] != null) {
+          // capsuleRemain 데이터를 리스트로 처리
+          List<dynamic> capsuleRemainList = data['data']['capsuleRemain'];
+
+          // 데이터를 map 형태로 저장
+          capsuleRemainMap.clear();
+          for (var capsule in capsuleRemainList) {
+            String type = capsule['capsuleType'];
+            int remain = capsule['remain'];
+            capsuleRemainMap[type] = remain; // type을 키로 사용해 remain 저장
+          }
+
+          // 특정 캡슐 타입 remain 확인 (예: MULTI)
+          print("MULTI 캡슐 잔여량: ${capsuleRemainMap['MULTI']}");
+          print("CARBS 캡슐 잔여량: ${capsuleRemainMap['CARBS']}");
+          print("PROTEIN 캡슐 잔여량: ${capsuleRemainMap['PROTEIN']}");
+          print("${capsuleRemainMap}");
+
+          notifyListeners(); // 상태 변경 알림
+        }
+
+        if (data['data']['recentThreeHistory'] != null) {
+          List<dynamic> recentHistoryList = data['data']['recentThreeHistory'];
+
+          recentThreeHistory.clear(); // 기존 데이터 초기화
+          for (var history in recentHistoryList) {
+            if (history['capsuleType'] != null && history['date'] != null) {
+              recentThreeHistory.add({
+                "capsuleType": history['capsuleType'],
+                "date": history['date'],
+              });
+            } else {
+              print("누락된 데이터: $history");
+            }
+          }
+
+          print("최근 3번의 투여 기록: $recentThreeHistory");
+        } else {
+          print("캡슐 데이터가 없습니다.");
+        }
+      } else {
+        print("Failed to fetch capsule details: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching capsule details: $e");
     }
   }
 
@@ -462,4 +537,19 @@ class SelectedDeviceProvider with ChangeNotifier {
         return '알 수 없는 상태입니다.';
     }
   }
+
+
+  // 모드 변경
+  String getDeviceMode(String deviceMode) {
+  switch (deviceMode.toUpperCase()) {
+    case 'GENERAL':
+      return '일반';
+    case 'DEHUMID':
+      return '제습';
+    case 'SAVING':
+      return '절전';
+    default:
+      return '알 수 없는 모드입니다.';
+  }
+}
 }

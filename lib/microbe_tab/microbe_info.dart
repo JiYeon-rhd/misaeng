@@ -90,6 +90,7 @@ class _MicrobeInfoState extends State<MicrobeInfo> {
                 _buildCustomColorToggle(),
                 // 색상 선택 UI
                 //if (_isColorPickerEnabled) _buildSelectCustomColor(context),
+                const SizedBox(height: 50),
               ],
             ),
           ),
