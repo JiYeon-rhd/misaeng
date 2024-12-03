@@ -138,7 +138,7 @@ class _LeaveSettingState extends State<LeaveSetting> {
             ),
             const SizedBox(height: 13),
             const Text(
-              "미생물 상태에 맞춰 자동으로 필요한 캡슐이 투여됩니다.",
+              "해당 시간 동안 사용하지 않으면 자리비움 모드가 설정됩니다.",
               style: TextStyle(fontFamily: "LineKrRg", fontSize: 13),
             ),
             const SizedBox(height: 35),
@@ -150,7 +150,7 @@ class _LeaveSettingState extends State<LeaveSetting> {
             ),
             const SizedBox(height: 13),
             const Text(
-              "미생물 상태에 맞춰 자동으로 필요한 캡슐이 투여됩니다.",
+              "미생물 상태에 맞춰 자동으로 종합 케어 캡슐이 투여됩니다.",
               style: TextStyle(fontFamily: "LineKrRg", fontSize: 13),
             ),
             Spacer(),

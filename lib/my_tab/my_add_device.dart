@@ -50,7 +50,9 @@ class _AddDeviceState extends State<AddDevice> {
             "deviceName": device['deviceName'],
             "microbeName": device['microbeInfo']['microbeName'],
             "microbeId": device['microbeInfo']['microbeId'],
-            "microbeImage": "images/microbe_bad_blue.png" // 임시 이미지 경로
+            "microbeImage": "images/microbe_bad_blue.png", // 임시 이미지 경로
+            "microbeColor": device['microbeInfo']['microbeColor'],
+            "microbeMood": device['microbeInfo']['microbeMood'],
           });
           // 상태 업데이트
           setState(() {
@@ -164,7 +166,7 @@ class DeviceCard extends StatelessWidget {
                 style: TextStyle(
                     color: Colors.white, fontSize: 12, fontFamily: "LineKrRg"),
               ),
-              SizedBox(height: 8), 
+              SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -179,18 +181,25 @@ class DeviceCard extends StatelessWidget {
                   ),
                   CircleAvatar(
                     radius: 29, // CircleAvatar의 반지름
-                    backgroundColor: Colors.white, // 원형 배경색
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0), // 이미지와 원 사이의 패딩 추가
-                      child: ClipOval(
-                        child: AspectRatio(
-                          aspectRatio: 1, // 정사각형 비율 유지
-                          child: Image.asset(
-                            deviceData['microbeImage'], // 이미지 파일 경로
-                            fit: BoxFit.fitWidth, // 이미지를 적절히 맞춤
-                          ),
+                    backgroundColor: Colors.white, // CircleAvatar의 배경색
+                    child: Stack(
+                      alignment: Alignment.center, // 중앙 정렬
+                      children: [
+                        Image.asset(
+                          'images/microbe_shape.png', // 기본 미생물 이미지
+                          width: 48, // CircleAvatar 크기에 맞게 조정
+                          height: 48,
+                          color: getColorFromString(
+                              deviceData['microbeColor']), // 전달받은 색상 적용
                         ),
-                      ),
+                        Image.asset(
+                          deviceData["microbeMood"] == 'BAD'
+                              ? 'images/microbe_bad.png' // BAD 상태의 이미지
+                              : 'images/microbe_smile.png', // SMILE 상태의 이미지
+                          width: 44, // 미생물 이미지 크기 조정
+                          height: 44,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -200,6 +209,42 @@ class DeviceCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // 색상 변환 함수
+  Color getColorFromString(String colorString) {
+    switch (colorString.toUpperCase()) {
+      case 'RED':
+        return Colors.red;
+      case 'ORANGE':
+        return Colors.orange;
+      case 'YELLOW':
+        return Colors.yellow;
+      case 'GREEN':
+        return Colors.green;
+      case 'BLUE':
+        return Colors.blue;
+      case 'PURPLE':
+        return Colors.purple;
+      case 'MAGENTA':
+        return Colors.pinkAccent; // Flutter에서 Magenta에 가까운 색상
+      case 'PINK':
+        return Colors.pink;
+      case 'BROWN':
+        return Colors.brown;
+      case 'BLACK':
+        return Colors.black;
+      case 'WHITE':
+        return Colors.white;
+      case 'LIME':
+        return Colors.lime;
+      case 'CYAN':
+        return Colors.cyan;
+      case 'DARK_BLUE':
+        return Colors.blue[900]!; // 진한 파란색
+      default:
+        return Colors.grey; // 매칭되지 않는 경우 기본 색상
+    }
   }
 }
 
