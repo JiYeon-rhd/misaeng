@@ -8,7 +8,6 @@ class EditRecord extends StatefulWidget {
   final Map<String, dynamic> record;
 
   const EditRecord({super.key, required this.date, required this.record});
-  
 
   @override
   _EditRecordState createState() => _EditRecordState();
@@ -19,23 +18,59 @@ class _EditRecordState extends State<EditRecord> {
   late List<String> selectedCategories;
   bool _isDialogActive = false; // 다이얼로그 활성 상태 확인
 
-  final List<String> allCategories = [
+  final List<String> forbiddenCategories = [
     '김치 및 절임류',
-    '과일류',
+    '볶음/구이 및 조림류',
+    '튀김 및 전/부침류',
+    '음식이 아닌 항목'
+  ];
+
+  final List<String> notForbiddenCategories = [
     '밥 및 면류',
     '빵 및 곡류',
-    '볶음/구이 및 조림류',
     '유제품/계란 및 디저트',
-    '튀김 및 전/부침류',
-    '샐러드 및 채소류',
+    '샐러드 및 과채류',
     '해산물 요리',
     '기타 음식 및 간식',
   ];
 
+  String _getFoodCategoryMessage(String? category) {
+    switch (category?.toUpperCase()) {
+      case 'KIMCHI':
+        return '김치 및 절임류';
+      case 'RICE':
+        return '밥/주식 및 면류';
+      case 'STIR_FRIED':
+        return '볶음/구이 및 조림류';
+      case 'FRIED':
+        return '튀김 및 전/부침류';
+      case 'SEAFOOD':
+        return '해산물 요리';
+      case 'SALAD':
+        return '샐러드 및 과채류';
+      case 'BREAD':
+        return '빵 및 곡류';
+      case 'DAIRY':
+        return '유제품/계란 및 디저트';
+      case 'OTHER':
+        return '기타 음식 및 간식';
+      case 'NONE_FOOD':
+        return '음식이 아닌 항목';
+      default:
+        return '알 수 없는 카테고리';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    selectedCategories = List<String>.from(widget.record['foodCategory'] ?? []);
+    // _getFoodCategoryMessage를 사용하여 변환
+    selectedCategories = (widget.record['foodCategory'] as List<dynamic>)
+        .map((e) => _getFoodCategoryMessage(e.toString()))
+        .toList();
+
+    print("Selected Categories: $selectedCategories");
+    print("Not Forbidden Categories: $notForbiddenCategories");
   }
 
   void _toggleCategory(String category) {
@@ -148,21 +183,72 @@ class _EditRecordState extends State<EditRecord> {
   }
 
   Widget _buildCategoryGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: allCategories.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 4,
-      ),
-      itemBuilder: (context, index) {
-        final category = allCategories[index];
-        final isSelected = selectedCategories.contains(category);
-        return _buildFoodCategoryButton(category, isSelected);
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Forbidden Categories Section
+        SizedBox(height: 8),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: forbiddenCategories.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 4,
+          ),
+          itemBuilder: (context, index) {
+            final category = forbiddenCategories[index];
+            final isSelected = selectedCategories.contains(category.toString());
+            return _buildFoodCategoryButton(category, isSelected);
+          },
+        ),
+        //SizedBox(height: 16), // 섹션 간격 추가
+
+        // Not Forbidden Categories Section
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Color(0xFF007AFF), // 테두리 색상 빨강
+              width: 1, // 테두리 두께
+            ),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "분해 가능한 음식",
+                style: TextStyle(
+                  color: Color(0xFF007AFF), // 텍스트 색상 빨강
+                  fontSize: 16,
+                  fontFamily: "LineKrRg",
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        SizedBox(height: 8),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: notForbiddenCategories.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 4,
+          ),
+          itemBuilder: (context, index) {
+            final category = notForbiddenCategories[index];
+            final isSelected = selectedCategories.contains(category.toString());
+            return _buildFoodCategoryButton(category, isSelected);
+          },
+        ),
+      ],
     );
   }
 
@@ -254,9 +340,9 @@ class _EditRecordState extends State<EditRecord> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.asset(
+                            child: Image.network(
                               widget.record['imgUrl'] ??
-                                  'images/placeholder.png',
+                                  'images/foodwaste_image.png',
                               height: 278,
                               width: double.infinity,
                               fit: BoxFit.cover,

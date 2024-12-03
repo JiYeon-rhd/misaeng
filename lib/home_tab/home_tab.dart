@@ -18,10 +18,9 @@ class _HomeTabState extends State<HomeTab> {
   //String temperature = '적절';
   //String humid = '높음';
   String _selectedMode = '일반'; // 기본 선택 모드
-  bool leaveSetting = false;
+  //bool leaveSetting = flase;
   bool _isDialogActive = false; // 다이얼로그 활성 상태 확인
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,15 +28,19 @@ class _HomeTabState extends State<HomeTab> {
       body: Consumer<SelectedDeviceProvider>(
           builder: (context, selectedDevice, child) {
         // Consumer를 통해 가져온 값 출력
-        print("[HomeTab] Device Name: ${selectedDevice.deviceName ?? 'Unknown'}");
+        print(
+            "[HomeTab] Device Name: ${selectedDevice.deviceName ?? 'Unknown'}");
         print("[HomeTab] Microbe Name: ${selectedDevice.bday ?? 'Unknown'}");
+        print("[HomeTab] 자리비움: ${selectedDevice.emptyState ?? 'Unknown'}");
+        print("[HomeTab] 시리얼넘버: ${selectedDevice.serialNum ?? 'Unknown'}");
 
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 12),
-              _buildDeviceName(selectedDevice.deviceName ?? "이름 없음", selectedDevice.bday ?? 999),
+              _buildDeviceName(selectedDevice.deviceName ?? "이름 없음",
+                  selectedDevice.bday ?? 999),
               // 기기 상태 섹션
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -61,14 +64,14 @@ class _HomeTabState extends State<HomeTab> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatusCard(
-                            'images/home_input.png', '투여량', '${selectedDevice.foodWeightStateText}'),
-                        _buildStatusCard(
-                            'images/home_state.png', '상태', '${selectedDevice.microbeStateSummaryText}'),
+                        _buildStatusCard('images/home_input.png', '투여량',
+                            '${selectedDevice.foodWeightStateText}'),
+                        _buildStatusCard('images/home_state.png', '상태',
+                            '${selectedDevice.microbeStateSummaryText}'),
                         _buildStatusCard('images/home_temperature.png', '온도',
                             '${selectedDevice.temperatureStateText}'),
-                        _buildStatusCard(
-                            'images/home_humid.png', '습도', '${selectedDevice.humidityStateText}'),
+                        _buildStatusCard('images/home_humid.png', '습도',
+                            '${selectedDevice.humidityStateText}'),
                       ],
                     ),
                   ],
@@ -119,78 +122,82 @@ class _HomeTabState extends State<HomeTab> {
               // 자리 비움 섹션
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0), // 외부 여백
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 4), // 내부 여백
-                  decoration: BoxDecoration(
-                    color: leaveSetting
-                        ? Colors.white
-                        : const Color(0xFFF0F0F0), // 활성화 여부에 따른 배경색
-                    borderRadius: BorderRadius.circular(12), // 둥근 모서리
-                    boxShadow: leaveSetting
-                        ? [
-                            const BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 2,
-                              offset: Offset(0, 1),
-                            )
-                          ]
-                        : [], // 활성화 상태에 따라 그림자 추가
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const Text(
-                            '자리 비움',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: "LineKrRg",
-                              color: Color(0xFF333333),
+                child: Consumer<SelectedDeviceProvider>(
+                    builder: (context, selectedDevice, child) {
+                  bool leaveSetting = selectedDevice.emptyState ?? false;
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 4), // 내부 여백
+                    decoration: BoxDecoration(
+                      color: leaveSetting
+                          ? Colors.white
+                          : const Color(0xFFF0F0F0), // 활성화 여부에 따른 배경색
+                      borderRadius: BorderRadius.circular(12), // 둥근 모서리
+                      boxShadow: leaveSetting
+                          ? [
+                              const BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 2,
+                                offset: Offset(0, 1),
+                              )
+                            ]
+                          : [], // 활성화 상태에 따라 그림자 추가
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              '자리 비움',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: "LineKrRg",
+                                color: Color(0xFF333333),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: Icon(
-                              Icons.help_outline, // 아이콘
-                              color: Color(0xFFB6B6B6),
-                              size: 18,
-                            ), // 아이콘 버튼
-                            onPressed: _showInfoDialog, // 버튼 동작 함수 연결
-                          ),
-                        ],
-                      ),
-                      Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: leaveSetting
-                              ? Color(0xFF007AFF)
-                              : Colors.transparent, // 활성화 상태에 따른 색상
-                          border: Border.all(
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: Icon(
+                                Icons.help_outline, // 아이콘
+                                color: Color(0xFFB6B6B6),
+                                size: 18,
+                              ), // 아이콘 버튼
+                              onPressed: _showInfoDialog, // 버튼 동작 함수 연결
+                            ),
+                          ],
+                        ),
+                        Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
                             color: leaveSetting
                                 ? Color(0xFF007AFF)
-                                : Color(0xFFB6B6B6), // 활성화 상태에 따른 테두리 색상
-                            width: 1.5,
+                                : Colors.transparent, // 활성화 상태에 따른 색상
+                            border: Border.all(
+                              color: leaveSetting
+                                  ? Color(0xFF007AFF)
+                                  : Color(0xFFB6B6B6), // 활성화 상태에 따른 테두리 색상
+                              width: 1.5,
+                            ),
                           ),
+                          child: leaveSetting
+                              ? const Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                  size: 16,
+                                )
+                              : const Icon(
+                                  Icons.close,
+                                  color: Color(0xFFB6B6B6),
+                                  size: 16,
+                                ),
                         ),
-                        child: leaveSetting
-                            ? const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 16,
-                              )
-                            : const Icon(
-                                Icons.close,
-                                color: Color(0xFFB6B6B6),
-                                size: 16,
-                              ),
-                      ),
-                    ],
-                  ),
-                ),
+                      ],
+                    ),
+                  );
+                }),
               ),
               SizedBox(height: 50),
             ],
@@ -266,25 +273,26 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   Widget _buildStatusCard(String imagePath, String title, String state) {
-    final provider = Provider.of<SelectedDeviceProvider>(context, listen: false);
+    final provider =
+        Provider.of<SelectedDeviceProvider>(context, listen: false);
     Color statusColor = Color(0xFF007AFF);
 
-     // 음식 투여량
+    // 음식 투여량
     if (title == "투여량") {
       if (state == "과다") {
         statusColor = Color(0xFFFF0000);
       } else {
         statusColor = Color(0xFF007AFF);
-      } 
+      }
     }
-    // 온도, 습도 
+    // 온도, 습도
     if (title == "온도" || title == "습도") {
       if (state == "적절") {
         statusColor = Color(0xFF007AFF);
       } else if (state == "높음") {
         statusColor = Color(0xFFFF0000);
       } else {
-        statusColor = Color(0xFF007AFF);
+        statusColor = Color(0xFFFF0000);
       }
     }
 

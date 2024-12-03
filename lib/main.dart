@@ -12,6 +12,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:misaeng/onboarding/login.dart';
+import 'package:misaeng/onboarding/splash_screen.dart';
 import 'package:misaeng/providers/selected_device_provider.dart';
 import 'package:misaeng/register/register_screen.dart';
 import 'package:provider/provider.dart';
@@ -32,13 +33,17 @@ void main() async {
         ChangeNotifierProvider(
             create: (_) => SelectedDeviceProvider()), // Provider 등록
       ],
+      // child: MaterialApp(
+      //   initialRoute: '/',
+      //   routes: {
+      //     '/': (context) => SplashScreen(),
+      //     '/home': (context) => RegisterScreen(),
+      //   },
+      // ),
       child: MaterialApp(
-        initialRoute: '/',
-        routes: {
-          '/': (context) => AddDevice(),
-          '/home': (context) => RegisterScreen(),
-        },
-      ),
+          //title: 'Misaeng App',
+          home: AddDevice(), // 첫 화면을 SplashScreen으로 설정
+        ),
     ),
   );
 }
@@ -65,6 +70,7 @@ class MyApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: Scaffold(
               body: Center(child: CircularProgressIndicator()),
             ),
@@ -74,13 +80,17 @@ class MyApp extends StatelessWidget {
         // 로그인 상태 확인
         bool isLoggedIn = false;
 
+        // return MaterialApp(
+        //   title: 'Misaeng App',
+        //   initialRoute: isLoggedIn ? '/home' : '/',
+        //   routes: {
+        //     '/': (context) => SplashScreen(),
+        //     '/home': (context) => MainApp(),
+        //   },
+        // );
         return MaterialApp(
           title: 'Misaeng App',
-          initialRoute: isLoggedIn ? '/home' : '/',
-          routes: {
-            '/': (context) => AddDevice(),
-            '/home': (context) => RegisterScreen(),
-          },
+          home: AddDevice(), // 첫 화면을 SplashScreen으로 설정
         );
       },
     );

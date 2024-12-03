@@ -2,9 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart'; // http 패키지 import
 
 class SelectedDeviceProvider with ChangeNotifier {
+  final String backendUrl = dotenv.env['FLUTTER_APP_API_URL']!;
+
   int? deviceId;
   String? deviceName;
   String? serialNum;
@@ -40,6 +43,7 @@ class SelectedDeviceProvider with ChangeNotifier {
   double? weight;
   String? createdAt;
 
+  // 온습도 변수
   double? temperature;
   double? humidity;
   String? temperatureState;
@@ -47,14 +51,12 @@ class SelectedDeviceProvider with ChangeNotifier {
   String? humidityState;
   String? humidityStateText;
 
-
-
-  final String backendUrl = dotenv.env['FLUTTER_APP_API_URL']!;
-
-  void updateDeviceId(int id) {
-    deviceId = id;
-    notifyListeners();
-  }
+  // 데이터를 변수에 할당
+  String? deviceMode;
+  bool? emptyState;
+  double? emptyActiveTime;
+  double? capsuleCycle;
+  double? closeWaitTime;
 
   // 미생물, 음처기 데이터 가져오는 메서드
   Future<void> fetchDeviceDetails() async {
@@ -65,7 +67,7 @@ class SelectedDeviceProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
-
+        print('${data}');
         // data['data']는 기기 정보의 리스트입니다.
         List<dynamic> devices = data['data'];
 
@@ -138,6 +140,42 @@ class SelectedDeviceProvider with ChangeNotifier {
     }
   }
 
+  // 음처기 모드 불러오는 메서드
+  Future<void> fetchDeviceState() async {
+    if (deviceId == null || serialNum == null) return;
+
+    try {
+      final response = await http.get(
+        Uri.parse('$backendUrl/api/devices/state/$serialNum'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        print("Device State Fetch Success: ${data['message']}");
+        //print('${data}');
+        // 필요 시 데이터 처리 로직 추가
+        if (data['data'] != null) {
+          // 데이터를 변수에 할당
+          deviceMode = data['data']['deviceMode'];
+          emptyState = data['data']['emptyState'];
+          emptyActiveTime = data['data']['emptyActiveTime'];
+          capsuleCycle = data['data']['capsuleCycle'];
+          closeWaitTime = data['data']['closeWaitTime'];
+
+          // 이 데이터를 사용할 추가 로직을 구현
+          // 예: 상태 업데이트, UI 반영
+          notifyListeners();
+        } else {
+          print("데이터가 없습니다: ${data['message']}");
+        }
+      } else {
+        print("Failed to fetch device state: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching device state: $e");
+    }
+  }
+
   // 음처기 온/습도 데이터 가져오는 메서드
   Future<void> fetchMicrobeEnvironmentDetails() async {
     if (microbeId == null) {
@@ -179,6 +217,73 @@ class SelectedDeviceProvider with ChangeNotifier {
     }
   }
 
+  // 음식물 투입 기록 월 단위 데이터 가져오는 메서드
+  Future<Map<DateTime, String>> fetchMonthlyCalendarData({
+    required int microbeId,
+    required DateTime yearMonth,
+  }) async {
+    final String formattedDate =
+        DateFormat('yyyy-MM').format(yearMonth); // yyyy-MM 형식으로 변환
+    try {
+      final response = await http.get(
+        Uri.parse(
+            '$backendUrl/api/microbes/$microbeId?yearMonth=$formattedDate'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        final List<dynamic> calendarData = data['data'];
+
+        // 데이터를 Map<DateTime, String> 형식으로 변환
+        final Map<DateTime, String> result = {};
+        for (var item in calendarData) {
+          final DateTime date = DateTime.parse(item['date']);
+          final String calendarState = item['calendarState'];
+          result[date] = calendarState;
+        }
+        return result;
+      } else {
+        print("Failed to fetch calendar data: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching calendar data: $e");
+    }
+    return {};
+  }
+
+  // 음식물 투입 기록 일 단위 데이터 가져오는 메서드
+  Future<Map<String, dynamic>?> fetchSelectedDateDetail({
+    required int microbeId,
+    required String date,
+  }) async {
+    try {
+      final url = Uri.parse(
+          '$backendUrl/api/microbes/detail/$microbeId?localDate=$date');
+      print(date);
+      print("Request URL: $url"); // URL 확인
+
+      final response = await http.get(
+        url,
+        // headers: {
+        //   // 필요한 경우 헤더 추가
+        //   'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+        //   'Content-Type': 'application/json',
+        // },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        return data['data']; // 'data' 객체 반환
+      } else {
+        print("Failed to fetch details for the date: ${response.statusCode}");
+        print("Response: ${response.body}");
+      }
+    } catch (e) {
+      print("Error fetching details for the date: $e");
+    }
+    return null; // 오류가 발생하거나 데이터를 가져오지 못한 경우 null 반환
+  }
+
   // 기기 정보 업데이트
   Future<void> updateDevice({
     required int deviceId,
@@ -192,6 +297,18 @@ class SelectedDeviceProvider with ChangeNotifier {
     await fetchDeviceDetails(); // 기기 상세 정보 가져오기
     await fetchMicrobeEnvironmentDetails(); // 환경 데이터 가져오기
     // `fetchDeviceDetails()` 내부에서 `notifyListeners()`를 호출하므로 여기서는 호출하지 않습니다.
+    await fetchDeviceState();
+  }
+
+  void updateDeviceMode(String newMode) {
+    deviceMode = newMode;
+    notifyListeners();
+  }
+
+  // 기기 아이디 업데이트
+  void updateDeviceId(int id) {
+    deviceId = id;
+    notifyListeners();
   }
 
   void updateMicrobeColor(Color newColor) {

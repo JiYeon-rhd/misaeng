@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:misaeng/bar/register_top_bar.dart';
+import 'package:misaeng/my_tab/my_add_device.dart';
 import 'package:misaeng/register/register_device.dart';
 import 'package:misaeng/register/register_microbe.dart';
 import 'package:misaeng/register/register_name.dart';
@@ -45,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // 홈 화면으로 이동
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => MainApp()),
+                MaterialPageRoute(builder: (context) => AddDevice()),
               );
             },
           ),

@@ -22,8 +22,8 @@ class _MyTabState extends State<MyTab> {
     }
   }
 
-  final String userName = "김미생";
-  final String userEmail = "misaeng12@kakao.com";
+  final String userName = "김선하";
+  final String userEmail = "beast1422@daum.net";
   //final String deviceName = "misaeng mk-1";
   //final String microbeName = "미생이";
   final String subStartDay = "";
